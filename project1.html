@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieSphere | Home</title>
+    <link rel="stylesheet" href="styles.css">
+    
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">MovieSphere</div>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#movies">Movies</a>
+            <a href="#">Profile</a>
+            <a href="#">Login</a>
+        </nav>
+        <div class="search-bar">
+            <input type="text" placeholder="Search for movies...">
+        </div>
+    </header>
+
+    <main>
+        <iframe srcdoc='
+        <style>
+            .hero {
+            text-align: center;
+            padding: 0px 20px; /* Reduced padding */
+            background: linear-gradient(to bottom, #1a1a1a, #121212);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Remove scrollbar */
+            }
+            .hero h1 {
+            font-size: 4em;
+            margin-bottom: 20px;
+            color: #00bcd4;
+            }
+            .hero p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            }
+            .hero .cta-button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            color: #ffffff;
+            background-color: #00bcd4;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            }
+            .hero .cta-button:hover {
+            background-color: #0097a7;
+            }
+        </style>
+        <section class="hero">
+            <h1>Welcome to MovieSphere</h1>
+            <p style="color: white;">Discover, watch, and book your favorite movies effortlessly.</p>
+            <button class="cta-button" onclick="parent.document.getElementById(&quot;movies&quot;).scrollIntoView({ behavior: &quot;smooth&quot; });">Explore Now</button>
+        </section>' style="border:none; width:100%; height:100vh; overflow:hidden;" scrolling="no"></iframe>
+
+            <iframe srcdoc='
+            <style>
+                body {
+                    margin: 0;
+                    font-family: Arial, sans-serif;
+                    background-color: #121212;
+                    color: #ffffff;
+                }
+                .movies-section {
+                    padding: 40px 20px;
+                    max-width: 1200px;
+                    margin: 0 auto;
+                }
+                .movies-section h2 {
+                    font-size: 2.5em;
+                    text-align: center;
+                    margin-bottom: 30px;
+                    color: #00e5ff;
+                }
+                .movies-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 20px;
+                    padding: 10px;
+                }
+                .movie-card {
+                    background-color: #1e1e1e;
+                    border-radius: 10px;
+                    overflow: hidden;
+                    text-align: center;
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+                }
+                .movie-card:hover {
+                    transform: scale(1.05);
+                    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
+                }
+                .movie-card img {
+                    width: 100%;
+                    height: auto;
+                    object-fit: cover;
+                    border-bottom: 3px solid #00e5ff;
+                }
+                .movie-card h3 {
+                    margin: 15px 0 10px;
+                    font-size: 1.2em;
+                    color: #00e5ff;
+                }
+                .movie-card .rating {
+                    color: #ffea00;
+                    font-size: 1em;
+                    margin-bottom: 15px;
+                }
+                .movie-card .view-details {
+                    display: inline-block;
+                    padding: 10px 20px;
+                    background-color: #00e5ff;
+                    color: #121212;
+                    border-radius: 5px;
+                    text-decoration: none;
+                    font-size: 1em;
+                    font-weight: bold;
+                    transition: background-color 0.3s ease, color 0.3s ease;
+                }
+                .movie-card .view-details:hover {
+                    background-color: #00b3cc;
+                    color: #ffffff;
+                }
+            </style>
+            <section id="movies" class="movies-section">
+                <h2>Trending Movies</h2>
+                <div class="movies-grid">
+                    <div class="movie-card">
+                        <img src="movie1.jpg" alt="Your Fault">
+                        <h3>Your Fault</h3>
+                        <p class="rating">⭐⭐⭐⭐⭐</p>
+                        <a href="#" class="view-details">View Details</a>
+                    </div>
+                    <div class="movie-card">
+                        <img src="movie2.jpg" alt="Bhool Bhulaiya 3">
+                        <h3>Bhool Bhulaiya 3</h3>
+                        <p class="rating">⭐⭐⭐⭐</p>
+                        <a href="#" class="view-details">View Details</a>
+                    </div>
+                    <div class="movie-card">
+                        <img src="movie3.jpg" alt="We Live in Time">
+                        <h3>We Live in Time</h3>
+                        <p class="rating">⭐⭐⭐⭐⭐</p>
+                        <a href="#" class="view-details">View Details</a>
+                    </div>
+                    <div class="movie-card">
+                        <img src="movie4.jpg" alt="Marco">
+                        <h3>Marco</h3>
+                        <p class="rating">⭐⭐⭐⭐</p>
+                        <a href="#" class="view-details">View Details</a>
+                    </div>
+                    <div class="movie-card">
+                        <img src="movie1.jpg" alt="The Great Escape">
+                        <h3>The Great Escape</h3>
+                        <p class="rating">⭐⭐⭐⭐⭐</p>
+                        <a href="#" class="view-details">View Details</a>
+                    </div>
+                    <div class="movie-card">
+                        <img src="movie2.jpg" alt="Mystery Island">
+                        <h3>Mystery Island</h3>
+                        <p class="rating">⭐⭐⭐⭐</p>
+                        <a href="#" class="view-details">View Details</a>
+                    </div>
+                    <div class="movie-card">
+                        <img src="movie3.jpg" alt="The Last Stand">
+                        <h3>The Last Stand</h3>
+                        <p class="rating">⭐⭐⭐⭐⭐</p>
+                        <a href="#" class="view-details">View Details</a>
+                    </div>
+                    <div class="movie-card">
+                        <img src="movie4.jpg" alt="Adventure Awaits">
+                        <h3>Adventure Awaits</h3>
+                        <p class="rating">⭐⭐⭐⭐</p>
+                        <a href="#" class="view-details">View Details</a>
+                    </div>
+                </div>
+            </section>' style="border:none; width:100%; height:170vh;" scrolling="no"></iframe>
+
+    </main>
+
+    <style>
+        footer {
+            background-color: #1a1a1a;
+            text-align: center;
+            padding: 20px 0;
+            font-size: 0.9em;
+            color: #aaaaaa;
+        }
+    </style>
+    <footer>
+        &copy; 2025 MovieSphere. All rights reserved.
+    </footer>
+</body>
+</html>
