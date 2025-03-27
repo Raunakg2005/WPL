@@ -1,3 +1,2 @@
 # WPL
-
-AI-Driven Movie Booking and Recommendations System
+A Movie Recommendations System.
