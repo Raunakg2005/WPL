@@ -1,17 +1,51 @@
 <?php
 // Set page title
-$page_title = "Add Movie";
+$page_title = "Edit Movie";
 
 // Include functions file
 require_once '../includes/functions.php';
+
 
 // Check if user is logged in and is admin
 if (!isLoggedIn() || !isAdmin()) {
     redirect('../login.php');
 }
 
+// Check if movie ID is provided
+if (!isset($_GET['id']) || empty($_GET['id'])) {
+    redirect('movies.php');
+}
+
+// Get movie ID
+$movie_id = intval($_GET['id']);
+
+// Get movie details
+$stmt = $conn->prepare("SELECT * FROM movies WHERE id = ?");
+$stmt->bind_param("i", $movie_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+// If movie not found, redirect to movies page
+if ($result->num_rows == 0) {
+    redirect('movies.php');
+}
+
+// Get movie data
+$movie = $result->fetch_assoc();
+
 // Initialize variables
-$title = $description = $release_date = $duration = $genre = $language = $director = $cast = $trailer_url = $rating = $status = "";
+$title = $movie['title'];
+$description = $movie['description'];
+$release_date = $movie['release_date'];
+$duration = $movie['duration'];
+$genre = $movie['genre'];
+$language = $movie['language'];
+$director = $movie['director'];
+$cast = $movie['cast'];
+$trailer_url = $movie['trailer_url'];
+$rating = $movie['rating'];
+$status = $movie['status'];
+$current_poster = $movie['poster'];
 $error = $success = "";
 
 // Process form submission
@@ -33,35 +67,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($title) || empty($description) || empty($release_date) || $duration <= 0 || empty($genre) || empty($language) || empty($director) || empty($cast)) {
         $error = "Please fill all required fields.";
     } else {
-        // Check if poster is uploaded
-        if (!isset($_FILES['poster']) || $_FILES['poster']['error'] != 0) {
-            $error = "Please upload a poster image.";
+        // Prepare movie data
+        $movie_data = [
+            'id' => $movie_id,
+            'title' => $title,
+            'description' => $description,
+            'release_date' => $release_date,
+            'duration' => $duration,
+            'genre' => $genre,
+            'language' => $language,
+            'director' => $director,
+            'cast' => $cast,
+            'trailer_url' => $trailer_url,
+            'rating' => $rating,
+            'status' => $status
+        ];
+        
+        // Check if new poster is uploaded
+        if (isset($_FILES['poster']) && $_FILES['poster']['error'] == 0) {
+            // Update movie with new poster
+            $result = updateMovie($movie_data, $_FILES['poster']);
         } else {
-            // Prepare movie data
-            $movie_data = [
-                'title' => $title,
-                'description' => $description,
-                'release_date' => $release_date,
-                'duration' => $duration,
-                'genre' => $genre,
-                'language' => $language,
-                'director' => $director,
-                'cast' => $cast,
-                'trailer_url' => $trailer_url,
-                'rating' => $rating,
-                'status' => $status
-            ];
+            // Update movie without changing poster
+            $result = updateMovie($movie_data);
+        }
+        
+        if ($result['success']) {
+            $success = $result['message'];
             
-            // Save movie
-            $result = saveMovie($movie_data, $_FILES['poster']);
-            
-            if ($result['success']) {
-                $success = $result['message'];
-                // Clear form data
-                $title = $description = $release_date = $duration = $genre = $language = $director = $cast = $trailer_url = $rating = $status = "";
-            } else {
-                $error = $result['message'];
-            }
+            // Refresh movie data
+            $stmt = $conn->prepare("SELECT * FROM movies WHERE id = ?");
+            $stmt->bind_param("i", $movie_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $movie = $result->fetch_assoc();
+            $current_poster = $movie['poster'];
+        } else {
+            $error = $result['message'];
         }
     }
 }
@@ -78,7 +120,7 @@ include 'includes/header.php';
         <!-- Main Content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Add New Movie</h1>
+                <h1 class="h2">Edit Movie</h1>
                 <a href="movies.php" class="btn btn-secondary">
                     <i class="fas fa-arrow-left me-2"></i>Back to Movies
                 </a>
@@ -98,7 +140,7 @@ include 'includes/header.php';
                     Movie Information
                 </div>
                 <div class="card-body">
-                    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" enctype="multipart/form-data">
+                    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . '?id=' . $movie_id); ?>" enctype="multipart/form-data">
                         <div class="row">
                             <div class="col-md-8">
                                 <div class="mb-3">
@@ -169,11 +211,15 @@ include 'includes/header.php';
                             
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="poster" class="form-label required-field">Poster Image</label>
-                                    <div class="file-upload">
-                                        <input type="file" class="form-control" id="poster" name="poster" accept="image/*" data-preview="poster-preview" required>
+                                    <label for="poster" class="form-label">Poster Image</label>
+                                    <div class="mb-3">
+                                        <img src="../<?php echo $current_poster; ?>" alt="<?php echo $title; ?>" class="movie-poster-lg mb-3">
+                                        <p class="text-muted">Current poster</p>
                                     </div>
-                                    <small class="form-text text-muted">Recommended size: 500x750 pixels</small>
+                                    <div class="file-upload">
+                                        <input type="file" class="form-control" id="poster" name="poster" accept="image/*" data-preview="poster-preview">
+                                    </div>
+                                    <small class="form-text text-muted">Leave empty to keep current poster. Recommended size: 500x750 pixels</small>
                                     <img id="poster-preview" class="preview-image mt-3" style="display: none;">
                                 </div>
                             </div>
@@ -181,7 +227,7 @@ include 'includes/header.php';
                         
                         <div class="mt-4">
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-2"></i>Save Movie
+                                <i class="fas fa-save me-2"></i>Update Movie
                             </button>
                             <a href="movies.php" class="btn btn-secondary ms-2">Cancel</a>
                         </div>

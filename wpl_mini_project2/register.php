@@ -1,21 +1,29 @@
 <?php
+// Set page title
 $page_title = "Register";
+
+// Include functions file
 require_once 'includes/functions.php';
 
+// Check if user is already logged in
 if (isLoggedIn()) {
     redirect('index.php');
 }
 
+// Initialize variables
 $username = $email = $full_name = "";
 $error = $success = "";
 
+// Process registration form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Get form data
     $username = sanitize($_POST['username']);
     $email = sanitize($_POST['email']);
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm-password'];
     $full_name = sanitize($_POST['full-name']);
     
+    // Validate form data
     if (empty($username) || empty($email) || empty($password) || empty($confirm_password) || empty($full_name)) {
         $error = "Please fill all required fields.";
     } elseif (strlen($username) < 3) {
@@ -27,6 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif ($password != $confirm_password) {
         $error = "Passwords do not match.";
     } else {
+        // Check if username already exists
         $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
@@ -35,6 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result->num_rows > 0) {
             $error = "Username already exists. Please choose a different one.";
         } else {
+            // Check if email already exists
             $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
             $stmt->bind_param("s", $email);
             $stmt->execute();
@@ -43,12 +53,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($result->num_rows > 0) {
                 $error = "Email already exists. Please use a different one.";
             } else {
+                // Hash password
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                
+                // Insert new user
                 $stmt = $conn->prepare("INSERT INTO users (username, email, password, full_name) VALUES (?, ?, ?, ?)");
                 $stmt->bind_param("ssss", $username, $email, $hashed_password, $full_name);
                 
                 if ($stmt->execute()) {
                     $success = "Registration successful! You can now <a href='login.php'>login</a>.";
+                    // Clear form data
                     $username = $email = $full_name = "";
                 } else {
                     $error = "Error: " . $stmt->error;
@@ -58,12 +72,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
+// Include header
 include 'includes/header.php';
 ?>
 
 <div class="container py-5">
-    <div class="row justify-content-center"></div>
-        <div class="col-md-8"></div>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
             <div class="card shadow">
                 <div class="card-body p-5">
                     <h2 class="text-center mb-4">Create an Account</h2>
@@ -132,5 +147,6 @@ include 'includes/header.php';
 </div>
 
 <?php
+// Include footer
 include 'includes/footer.php';
 ?>

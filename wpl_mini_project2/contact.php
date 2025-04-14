@@ -1,25 +1,34 @@
 <?php
+// Set page title
 $page_title = "Contact Us";
+
+// Include functions file
 require_once 'includes/functions.php';
 
+// Initialize variables
 $name = $email = $subject = $message = "";
 $error = $success = "";
 
+// Process contact form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Get form data
     $name = sanitize($_POST['name']);
     $email = sanitize($_POST['email']);
     $subject = sanitize($_POST['subject']);
     $message = sanitize($_POST['message']);
     
+    // Validate form data
     if (empty($name) || empty($email) || empty($subject) || empty($message)) {
         $error = "Please fill all required fields.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Please enter a valid email address.";
     } else {
+        // Submit contact form
         $result = submitContactForm($name, $email, $subject, $message);
         
         if ($result['success']) {
             $success = $result['message'];
+            // Clear form data
             $name = $email = $subject = $message = "";
         } else {
             $error = $result['message'];
@@ -27,6 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
+// Include header
 include 'includes/header.php';
 ?>
 
@@ -80,7 +90,7 @@ include 'includes/header.php';
                     </div>
                     <div class="contact-info-content">
                         <h5>Our Location</h5>
-                        <p>123 Movie Street, Cinema City, CA 12345, USA</p>
+                        <p>KJSCE, Vidyavihar, Mumbai, Maharashtra, India</p>
                     </div>
                 </div>
                 
@@ -90,7 +100,7 @@ include 'includes/header.php';
                     </div>
                     <div class="contact-info-content">
                         <h5>Phone Number</h5>
-                        <p>+1 (123) 456-7890</p>
+                        <p>+91 9004575153</p>
                     </div>
                 </div>
                 
@@ -100,7 +110,7 @@ include 'includes/header.php';
                     </div>
                     <div class="contact-info-content">
                         <h5>Email Address</h5>
-                        <p><?php echo ADMIN_EMAIL; ?></p>
+                        <p>raunak.gupta@gmail.com</p>
                     </div>
                 </div>
                 
@@ -118,21 +128,23 @@ include 'includes/header.php';
                 <div class="contact-social">
                     <a href="#" class="contact-social-link"><i class="fab fa-facebook-f"></i></a>
                     <a href="#" class="contact-social-link"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="contact-social-link"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="contact-social-link"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://www.instagram.com/ohh.itz_rkg/" class="contact-social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com/in/raunak-kumar-gupta-7b3503270/" class="contact-social-link"><i class="fab fa-linkedin-in"></i></a>
                 </div>
             </div>
         </div>
     </div>
     
+    <!-- Map Section -->
     <div class="map-section mt-5">
         <h3 class="mb-4">Find Us on Map</h3>
-        <div class="ratio ratio-21x9"></div>
+        <div class="ratio ratio-21x9">
             <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.215266754809!2d-73.98784492426385!3d40.75790937138223!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25855c6480299%3A0x55194ec5a1ae072e!2sTimes%20Square!5e0!3m2!1sen!2sus!4v1710341987654!5m2!1sen!2sus" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
     </div>
 </div>
 
 <?php
+// Include footer
 include 'includes/footer.php';
 ?>

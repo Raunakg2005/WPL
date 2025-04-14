@@ -71,7 +71,7 @@ include 'includes/header.php';
                                     <i class="fas fa-eye me-1"></i>View Details
                                 </a>
                                 <?php if ($booking['booking_status'] == 'confirmed' && strtotime($booking['show_date']) > time()): ?>
-                                    <a href="cancel-booking.php?id=<?php echo $booking['id']; ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to cancel this booking?')">
+                                    <a href="cancel-booking.php?id=<?php echo $booking['id']; ?>" class="btn btn-sm btn-outline-danger ms-2" onclick="return confirm('Are you sure you want to cancel this booking?')">
                                         <i class="fas fa-times me-1"></i>Cancel Booking
                                     </a>
                                 <?php endif; ?>
@@ -83,7 +83,7 @@ include 'includes/header.php';
         </div>
         
         <div class="col-lg-4">
-            <div class="dashboard-card mb-4">
+            <div class="dashboard-card mb-4 p-3 border rounded">
                 <h3 class="dashboard-card-title">Profile Information</h3>
                 
                 <?php
@@ -115,7 +115,7 @@ include 'includes/header.php';
                 </div>
             </div>
             
-            <div class="dashboard-card">
+            <div class="dashboard-card p-3 border rounded mb-4">
                 <h3 class="dashboard-card-title">Recommended For You</h3>
                 
                 <?php if (empty($recommended_movies)): ?>
@@ -144,6 +144,83 @@ include 'includes/header.php';
         </div>
     </div>
 </div>
+
+<style>
+/* Additional CSS to fix layout issues */
+.booking-history-item {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+}
+
+.booking-history-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.booking-history-title {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.booking-history-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.booking-history-detail {
+    display: flex;
+    flex-direction: column;
+}
+
+.booking-history-detail-label {
+    font-weight: bold;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.booking-history-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.dashboard-card {
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    height: auto;
+    overflow: hidden;
+}
+
+.dashboard-card-title {
+    font-size: 1.25rem;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.recommended-movie-item {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.recommended-movie-item:last-child {
+    border-bottom: none;
+}
+
+@media (max-width: 991px) {
+    .booking-history-details {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
 
 <?php
 include 'includes/footer.php';

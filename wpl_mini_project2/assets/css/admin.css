@@ -2,25 +2,17 @@
 body {
     font-family: 'Poppins', sans-serif;
     background-color: #f8f9fa;
+    padding-top: 56px; /* For fixed navbar */
 }
 
 .sidebar {
     position: fixed;
-    top: 0;
+    top: 56px; /* Match navbar height */
     bottom: 0;
     left: 0;
     z-index: 100;
-    padding: 48px 0 0;
+    padding: 0;
     box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-}
-
-.sidebar-sticky {
-    position: relative;
-    top: 0;
-    height: calc(100vh - 48px);
-    padding-top: .5rem;
-    overflow-x: hidden;
-    overflow-y: auto;
 }
 
 .sidebar .nav-link {
@@ -47,15 +39,13 @@ body {
 }
 
 main {
-    padding-top: 48px;
+    padding-top: 20px;
 }
 
 .navbar-brand {
     padding-top: .75rem;
     padding-bottom: .75rem;
     font-size: 1rem;
-    background-color: rgba(0, 0, 0, .25);
-    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
 }
 
 .navbar .navbar-toggler {
@@ -389,19 +379,22 @@ main {
     color: #055160;
 }
 
+/* Responsive sidebar */
 @media (max-width: 767.98px) {
     .sidebar {
-        position: static;
-        height: auto;
-        padding-top: 0;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 280px !important;
+        height: 100vh;
+        z-index: 1050;
+    }
+    
+    .offcanvas-md {
+        width: 280px !important;
     }
     
     main {
-        padding-top: 0;
-    }
-    
-    .navbar-brand {
-        padding-top: .5rem;
-        padding-bottom: .5rem;
+        margin-left: 0 !important;
     }
 }

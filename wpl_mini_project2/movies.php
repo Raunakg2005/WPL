@@ -1,114 +1,133 @@
 <?php
+// Set page title
 $page_title = "Movies";
+
+// Include functions file
 require_once 'includes/functions.php';
 
+// Initialize variables
 $search = isset($_GET['search']) ? sanitize($_GET['search']) : '';
 $genre = isset($_GET['genre']) ? sanitize($_GET['genre']) : '';
 $language = isset($_GET['language']) ? sanitize($_GET['language']) : '';
 
-if (!empty($search) || !empty($genre) || !empty($language)) {
-    $movies = searchMovies($search, $genre, $language);
-} else {
-    $movies = getAllMovies(null);
-}
+// Get all genres and languages for filter
+$genres = getAllGenres();
+$languages = getAllLanguages();
 
-$all_genres = getAllGenres();
-$all_languages = getAllLanguages();
+// Get movies based on filters
+$movies = searchMovies($search, $genre, $language);
 
+// Include header
 include 'includes/header.php';
 ?>
 
-<div class="container py-5">
-    <h1 class="mb-4">Movies</h1>
-    
-    <div class="card mb-4" id="movie-filter">
-        <div class="card-body">
-            <h5 class="card-title mb-3">Filter Movies</h5>
-            <form method="get" action="movies.php"></form>
-                <div class="row g-3">
-                    <div class="col-md-6"></div>
-                        <input type="text" class="form-control" name="search" placeholder="Search by title, director, cast..." value="<?php echo $search; ?>">
-                    </div>
-                    <div class="col-md-2">
-                        <select class="form-select" name="genre">
-                            <option value="">All Genres</option>
-                            <?php foreach ($all_genres as $g): ?>
-                                <option value="<?php echo $g; ?>" <?php echo ($genre == $g) ? 'selected' : ''; ?>><?php echo $g; ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <select class="form-select" name="language">
-                            <option value="">All Languages</option>
-                            <?php foreach ($all_languages as $l): ?>
-                                <option value="<?php echo $l; ?>" <?php echo ($language == $l) ? 'selected' : ''; ?>><?php echo $l; ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="submit" class="btn btn-primary w-100">Filter</button>
-                    </div>
-                </div>
-            </form>
+<!-- Movies Banner Section -->
+<section class="movies-banner parallax-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+            <h1 class="display-4 text-danger">Discover Movies</h1>
+            <p class="lead" style="color: #FFD700;">Find the perfect movie for your entertainment</p>
+            </div>
         </div>
     </div>
-    
-    <?php if (empty($movies)): ?>
-        <div class="alert alert-info">No movies found matching your criteria.</div>
-    <?php else: ?>
+</section>
+
+<!-- Movies Filter Section -->
+<section class="py-5 bg-light">
+    <div class="container">
         <div class="row">
-            <?php foreach ($movies as $movie): ?>
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="movie-card"></div>
-                        <img src="<?php echo $movie['poster']; ?>" alt="<?php echo $movie['title']; ?>" class="movie-card-img">
-                        <div class="movie-card-body">
-                            <h5 class="movie-card-title"><?php echo $movie['title']; ?></h5>
-                            <div class="movie-card-info">
-                                <span><?php echo $movie['genre']; ?></span>
-                                <div class="movie-card-rating">
-                                    <i class="fas fa-star"></i>
-                                    <span><?php echo $movie['rating']; ?></span>
+            <div class="col-md-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <form method="get" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" class="row g-3">
+                            <div class="col-md-4">
+                                <label for="search" class="form-label">Search</label>
+                                <input type="text" class="form-control" id="search" name="search" value="<?php echo $search; ?>" placeholder="Search by title, director, or cast">
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <label for="genre" class="form-label">Genre</label>
+                                <select class="form-select" id="genre" name="genre">
+                                    <option value="">All Genres</option>
+                                    <?php foreach ($genres as $g): ?>
+                                        <option value="<?php echo $g; ?>" <?php echo ($genre == $g) ? 'selected' : ''; ?>><?php echo $g; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <label for="language" class="form-label">Language</label>
+                                <select class="form-select" id="language" name="language">
+                                    <option value="">All Languages</option>
+                                    <?php foreach ($languages as $l): ?>
+                                        <option value="<?php echo $l; ?>" <?php echo ($language == $l) ? 'selected' : ''; ?>><?php echo $l; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-search me-2"></i>Filter
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Movies List Section -->
+<section class="py-5">
+    <div class="container">
+        <?php if (empty($movies)): ?>
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <div class="alert alert-info">
+                        <h4 class="alert-heading">No Movies Found!</h4>
+                        <p>Sorry, no movies match your search criteria. Please try different filters.</p>
+                        <a href="movies.php" class="btn btn-primary mt-3">View All Movies</a>
+                    </div>
+                </div>
+            </div>
+        <?php else: ?>
+            <div class="row">
+                <?php foreach ($movies as $movie): ?>
+                    <div class="col-md-4 col-lg-3 mb-4">
+                        <div class="card movie-card h-100 shadow-sm">
+                            <div class="movie-poster">
+                                <img src="<?php echo $movie['poster']; ?>" class="card-img-top" alt="<?php echo $movie['title']; ?>">
+                                <div class="movie-rating">
+                                    <span><i class="fas fa-star text-warning"></i> <?php echo number_format($movie['rating'], 1); ?></span>
+                                </div>
+                                <div class="movie-overlay">
+                                    <a href="movie-details.php?id=<?php echo $movie['id']; ?>" class="btn btn-primary btn-sm">View Details</a>
                                 </div>
                             </div>
-                            <a href="movie-details.php?id=<?php echo $movie['id']; ?>" class="btn btn-primary w-100">View Details</a>
-                        </div>
-                        <div class="movie-card-overlay">
-                            <h5 class="movie-card-overlay-title"><?php echo $movie['title']; ?></h5>
-                            <div class="movie-card-overlay-info">
-                                <p><?php echo substr($movie['description'], 0, 100) . '...'; ?></p>
-                                <p><strong>Director:</strong> <?php echo $movie['director']; ?></p>
-                                <p><strong>Duration:</strong> <?php echo $movie['duration']; ?> mins</p>
+                            <div class="card-body">
+                                <h5 class="card-title movie-title"><?php echo $movie['title']; ?></h5>
+                                <p class="card-text movie-info">
+                                    <small class="text-muted">
+                                        <i class="fas fa-film me-1"></i> <?php echo $movie['genre']; ?><br>
+                                        <i class="fas fa-language me-1"></i> <?php echo $movie['language']; ?><br>
+                                        <i class="fas fa-clock me-1"></i> <?php echo $movie['duration']; ?> mins
+                                    </small>
+                                </p>
                             </div>
-                            <a href="movie-details.php?id=<?php echo $movie['id']; ?>" class="btn btn-light movie-card-overlay-btn">View Details</a>
-                            <?php if (!empty($movie['trailer_url'])): ?>
-                                <button class="btn btn-danger movie-card-overlay-btn trailer-btn" data-trailer="<?php echo $movie['trailer_url']; ?>">
-                                    <i class="fas fa-play me-2"></i>Watch Trailer
-                                </button>
-                            <?php endif; ?>
+                            <div class="card-footer bg-transparent border-top-0">
+                                <a href="movie-details.php?id=<?php echo $movie['id']; ?>" class="btn btn-outline-primary btn-sm w-100">Book Now</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
-</div>
-
-<div class="modal fade" id="trailerModal" tabindex="-1" aria-labelledby="trailerModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="trailerModalLabel">Movie Trailer</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <?php endforeach; ?>
             </div>
-            <div class="modal-body">
-                <div class="ratio ratio-16x9">
-                    <iframe id="trailerIframe" src="/placeholder.svg" title="Movie Trailer" allowfullscreen></iframe>
-                </div>
-            </div>
-        </div>
+        <?php endif; ?>
     </div>
-</div>
+</section>
 
 <?php
+// Include footer
 include 'includes/footer.php';
 ?>

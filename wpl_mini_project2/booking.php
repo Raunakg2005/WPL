@@ -1,22 +1,32 @@
 <?php
+// Include functions file
 require_once 'includes/functions.php';
 
+// Check if user is logged in
 if (!isLoggedIn()) {
     redirect('login.php');
 }
 
+// Check if show ID is provided
 if (!isset($_GET['show_id']) || empty($_GET['show_id'])) {
     redirect('movies.php');
 }
 
+// Get show ID
 $show_id = intval($_GET['show_id']);
+
+// Get show details
 $show = getShowById($show_id);
 
+// If show not found, redirect to movies page
 if (!$show) {
     redirect('movies.php');
 }
 
+// Set page title
 $page_title = "Book Tickets - " . $show['movie_title'];
+
+// Include header
 include 'includes/header.php';
 ?>
 
@@ -51,30 +61,33 @@ include 'includes/header.php';
                     
                     <div class="seats-container">
                         <?php
+                        // Generate seats (5 rows of 10 seats)
                         $rows = ['A', 'B', 'C', 'D', 'E'];
                         $seats_per_row = 10;
                         $total_seats = count($rows) * $seats_per_row;
                         $booked_seats = $total_seats - $show['available_seats'];
-                        
+
+                        // Randomly generate booked seats for demonstration
                         $booked_seats_array = [];
                         for ($i = 0; $i < $booked_seats; $i++) {
                             $random_row = $rows[array_rand($rows)];
                             $random_seat = rand(1, $seats_per_row);
                             $booked_seats_array[] = $random_row . $random_seat;
                         }
-                        
+
                         foreach ($rows as $row) {
-                            echo '<div class="seat-row">';
+                            echo '<div class="seat-row d-flex align-items-center mb-2">';
                             echo '<div class="seat-row-label me-3">' . $row . '</div>';
-                            
+
                             for ($i = 1; $i <= $seats_per_row; $i++) {
                                 $seat_number = $row . $i;
                                 $is_booked = in_array($seat_number, $booked_seats_array);
                                 $seat_class = $is_booked ? 'seat booked' : 'seat';
-                                
-                                echo '<div class="' . $seat_class . '">' . $i . '</div>';
+
+                                // Add tabindex for keyboard accessibility
+                                echo '<div class="' . $seat_class . '" data-seat="' . $seat_number . '" tabindex="0">' . $i . '</div>';
                             }
-                            
+
                             echo '</div>';
                         }
                         ?>
@@ -118,7 +131,7 @@ include 'includes/header.php';
                         </div>
                     </div>
                     
-                    <div class="d-grid mt-4"></div>
+                    <div class="d-grid mt-4">
                         <button type="submit" class="btn btn-primary btn-lg" disabled>Proceed to Payment</button>
                     </div>
                 </form>
@@ -127,10 +140,10 @@ include 'includes/header.php';
         
         <div class="col-lg-4">
             <div class="card">
-                <div class="card-header bg-primary text-white"></div>
+                <div class="card-header bg-primary text-white">
                     <h5 class="mb-0">Booking Information</h5>
                 </div>
-                <div class="card-body"></div>
+                <div class="card-body">
                     <p>Please select your preferred seats from the seating chart. You can select multiple seats.</p>
                     <p>Once you have selected your seats, review your booking summary and proceed to payment.</p>
                     <p>Please note:</p>
@@ -182,5 +195,6 @@ include 'includes/header.php';
 </script>
 
 <?php
+// Include footer
 include 'includes/footer.php';
 ?>

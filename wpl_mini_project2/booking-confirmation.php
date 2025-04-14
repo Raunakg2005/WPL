@@ -26,6 +26,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows == 0) {
+    $_SESSION['error'] = 'Booking not found.';
     redirect('user-dashboard.php');
 }
 
@@ -39,9 +40,11 @@ include 'includes/header.php';
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <div class="card shadow">
-                <div class="card-header bg-success text-white">
-                    <h3 class="mb-0">Booking Confirmed!</h3>
+            <div class="card shadow booking-card">
+                <div class="card-header <?php echo $booking['booking_status'] == 'confirmed' ? 'bg-success' : 'bg-danger'; ?> text-white">
+                    <h3 class="mb-0">
+                        <?php echo $booking['booking_status'] == 'confirmed' ? 'Booking Confirmed!' : 'Booking Cancelled'; ?>
+                    </h3>
                 </div>
                 <div class="card-body p-4">
                     <div class="text-center mb-4">
@@ -56,9 +59,9 @@ include 'includes/header.php';
                         <?php endif; ?>
                     </div>
                     
-                    <div class="row mb-4">
-                        <div class="col-md-4"></div>
-                            <img src="<?php echo $booking['movie_poster']; ?>" alt="<?php echo $booking['movie_title']; ?>" class="img-fluid rounded">
+                    <div class="row mb-4 align-items-center">
+                        <div class="col-md-4 text-center">
+                            <img src="<?php echo $booking['movie_poster']; ?>" alt="<?php echo $booking['movie_title']; ?>" class="img-fluid rounded movie-poster">
                         </div>
                         <div class="col-md-8">
                             <h5><?php echo $booking['movie_title']; ?></h5>
@@ -99,14 +102,6 @@ include 'includes/header.php';
                                     <td>$<?php echo number_format($booking['total_amount'], 2); ?></td>
                                 </tr>
                                 <tr>
-                                    <th>Payment Status</th>
-                                    <td>
-                                        <span class="badge bg-success">
-                                            <?php echo ucfirst($booking['payment_status']); ?>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
                                     <th>Booking Status</th>
                                     <td>
                                         <?php if ($booking['booking_status'] == 'confirmed'): ?>
@@ -120,17 +115,150 @@ include 'includes/header.php';
                         </div>
                     </div>
                     
-                    <div class="text-center">
-                        <a href="user-dashboard.php" class="btn btn-primary me-2">Go to Dashboard</a>
-                        <button class="btn btn-outline-secondary" onclick="window.print()">
-                            <i class="fas fa-print me-2"></i>Print Ticket
+                    <div class="text-center action-buttons">
+                        <a href="user-dashboard.php" class="btn btn-primary me-2">
+                            <i class="fas fa-home me-1"></i> Go to Dashboard
+                        </a>
+                        <button class="btn btn-outline-secondary me-2" onclick="printTicket()">
+                            <i class="fas fa-print me-1"></i> Print Ticket
                         </button>
+                        
+                        <?php if ($booking['booking_status'] == 'confirmed' && strtotime($booking['show_date']) > time()): ?>
+                            <a href="cancel-booking.php?id=<?php echo $booking['id']; ?>" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to cancel this booking?')">
+                                <i class="fas fa-times me-1"></i> Cancel Booking
+                            </a>
+                        <?php endif; ?>
+
+                        <script>
+                            function printTicket() {
+                                const originalContent = document.body.innerHTML;
+                                const ticketContent = document.querySelector('.card').innerHTML;
+
+                                const printWindow = window.open('', '_blank');
+                                printWindow.document.open();
+                                printWindow.document.write(`
+                                    <html>
+                                    <head>
+                                        <title>Print Ticket</title>
+                                        <style>
+                                            body {
+                                                font-family: Arial, sans-serif;
+                                                margin: 20px;
+                                            }
+                                            .card-header {
+                                                background-color: #28a745;
+                                                color: white;
+                                                text-align: center;
+                                                padding: 10px;
+                                                font-size: 18px;
+                                            }
+                                            .card-body img {
+                                                max-width: 150px;
+                                                display: block;
+                                                margin: 0 auto 10px;
+                                            }
+                                            table {
+                                                width: 100%;
+                                                border-collapse: collapse;
+                                                margin-top: 20px;
+                                            }
+                                            table, th, td {
+                                                border: 1px solid #ddd;
+                                            }
+                                            th, td {
+                                                padding: 8px;
+                                                text-align: left;
+                                            }
+                                            th {
+                                                background-color: #f2f2f2;
+                                            }
+                                        </style>
+                                    </head>
+                                    <body>
+                                        <div class="card">
+                                            ${ticketContent}
+                                        </div>
+                                    </body>
+                                    </html>
+                                `);
+                                printWindow.document.close();
+                                printWindow.print();
+                                printWindow.close();
+                            }
+                        </script>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    /* Custom CSS for the booking confirmation page */
+    .booking-card {
+        border-radius: 10px;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .booking-card .card-header {
+        padding: 15px;
+        font-weight: 600;
+    }
+    
+    .movie-poster {
+        max-height: 200px;
+        width: auto;
+        margin: 0 auto;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .booking-details h5 {
+        color: #333;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 8px;
+    }
+    
+    .table {
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    
+    .table th {
+        width: 40%;
+        background-color: #f8f9fa;
+    }
+    
+    .action-buttons {
+        margin-top: 25px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .action-buttons .btn {
+        padding: 8px 20px;
+        border-radius: 5px;
+        font-weight: 500;
+    }
+    
+    @media (max-width: 767px) {
+        .movie-poster {
+            max-height: 180px;
+            margin-bottom: 20px;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .action-buttons .btn {
+            margin-bottom: 10px;
+            width: 100%;
+        }
+    }
+</style>
 
 <?php
 include 'includes/footer.php';

@@ -1,5 +1,8 @@
 <?php
+// Set page title
 $page_title = "About Us";
+
+// Include header
 require_once 'includes/header.php';
 ?>
 
@@ -15,7 +18,7 @@ require_once 'includes/header.php';
     
     <div class="about-section mb-5">
         <h2 class="about-section-title">Our Story</h2>
-        <div class="about-content"></div>
+        <div class="about-content">
             <p>Founded in 2023, <?php echo SITE_NAME; ?> was born out of a simple idea: to create a platform that makes movie booking hassle-free and enjoyable. What started as a small project has now grown into a comprehensive service trusted by thousands of movie enthusiasts.</p>
             <p>Our journey has been driven by a deep love for cinema and a commitment to innovation. We continuously strive to enhance our platform with new features and improvements based on user feedback and industry trends.</p>
         </div>
@@ -23,7 +26,7 @@ require_once 'includes/header.php';
     
     <div class="about-section mb-5">
         <h2 class="about-section-title">Our Vision</h2>
-        <div class="about-content"></div>
+        <div class="about-content">
             <p>We envision a world where everyone can experience the magic of cinema without barriers. Our goal is to become the leading movie booking and recommendation platform, known for our exceptional user experience, personalized service, and innovative features.</p>
             <p>We are committed to:</p>
             <ul>
@@ -35,7 +38,8 @@ require_once 'includes/header.php';
         </div>
     </div>
     
-    <section class="parallax-section mb-5" style="background-image: url('assets/uploads/about-parallax.jpg');"></section>
+    <!-- Parallax Section -->
+    <section class="parallax-section mb-5" style="background-image: url('assets/uploads/about-parallax.jpg');">
         <div class="parallax-overlay"></div>
         <div class="container parallax-content">
             <div class="row justify-content-center">
@@ -53,36 +57,36 @@ require_once 'includes/header.php';
             <div class="col-md-4">
                 <div class="team-member">
                     <img src="assets/uploads/team1.jpg" alt="Team Member" class="team-member-img">
-                    <h4 class="team-member-name">John Doe</h4>
-                    <p class="team-member-role">Founder & CEO</p>
+                    <h4 class="team-member-name">Raunak Kumar Gupta</h4>
+                    <p class="team-member-role">Frontend Developer</p>
                     <div class="team-member-social">
-                        <a href="#" class="team-member-social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/ohh.itz_rkg/" class="team-member-social-link"><i class="fab fa-instagram"></i></a>
                         <a href="#" class="team-member-social-link"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="team-member-social-link"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="https://www.linkedin.com/in/raunak-kumar-gupta-7b3503270/" class="team-member-social-link"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="team-member">
                     <img src="assets/uploads/team2.jpg" alt="Team Member" class="team-member-img">
-                    <h4 class="team-member-name">Jane Smith</h4>
-                    <p class="team-member-role">CTO</p>
+                    <h4 class="team-member-name">Rohan Singh Chauhan</h4>
+                    <p class="team-member-role">UI/UX Designer</p>
                     <div class="team-member-social">
                         <a href="#" class="team-member-social-link"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" class="team-member-social-link"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="team-member-social-link"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="https://www.linkedin.com/in/rohansinghchauhan/" class="team-member-social-link"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="team-member">
                     <img src="assets/uploads/team3.jpg" alt="Team Member" class="team-member-img">
-                    <h4 class="team-member-name">Michael Johnson</h4>
-                    <p class="team-member-role">Head of Marketing</p>
+                    <h4 class="team-member-name">RISHIKESH RAMALINGAM</h4>
+                    <p class="team-member-role">Backend developer</p>
                     <div class="team-member-social">
                         <a href="#" class="team-member-social-link"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" class="team-member-social-link"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="team-member-social-link"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="https://www.linkedin.com/in/rishikesh-ramalingam-0b9598352/" class="team-member-social-link"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                 </div>
             </div>
@@ -132,5 +136,6 @@ require_once 'includes/header.php';
 </div>
 
 <?php
+// Include footer
 include 'includes/footer.php';
 ?>

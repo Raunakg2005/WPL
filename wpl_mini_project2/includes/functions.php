@@ -1,5 +1,8 @@
 <?php
-require_once __DIR__ . '/../config/config.php';
+// Include database configuration
+require_once(__DIR__ . '/../config/config.php');
+
+// Function to get all movies
 function getAllMovies($limit = null, $status = 'now_showing') {
     global $conn;
     
@@ -26,7 +29,87 @@ function getAllMovies($limit = null, $status = 'now_showing') {
     
     return $movies;
 }
+function deleteShow($show_id) {
+    global $conn;
 
+    $stmt = $conn->prepare("DELETE FROM shows WHERE id = ?");
+    $stmt->bind_param("i", $show_id);
+
+    if ($stmt->execute()) {
+        return ['success' => true, 'message' => 'Show deleted successfully.'];
+    } else {
+        return ['success' => false, 'message' => 'Failed to delete the show.'];
+    }
+}
+function updateMovie($movie_data, $poster = null) {
+    global $conn;
+
+    // Handle poster upload if provided
+    $poster_path = null;
+    if ($poster) {
+        $target_dir = "../uploads/";
+        $poster_path = $target_dir . basename($poster["name"]);
+        if (!move_uploaded_file($poster["tmp_name"], $poster_path)) {
+            return ['success' => false, 'message' => 'Failed to upload poster.'];
+        }
+    }
+
+    // Update movie details in the database
+    $query = "UPDATE movies SET title = ?, description = ?, release_date = ?, duration = ?, genre = ?, language = ?, director = ?, cast = ?, trailer_url = ?, rating = ?, status = ?";
+    if ($poster_path) {
+        $query .= ", poster = ?";
+    }
+    $query .= " WHERE id = ?";
+
+    $stmt = $conn->prepare($query);
+    if ($poster_path) {
+        $stmt->bind_param("sssssssssdssi", $movie_data['title'], $movie_data['description'], $movie_data['release_date'], $movie_data['duration'], $movie_data['genre'], $movie_data['language'], $movie_data['director'], $movie_data['cast'], $movie_data['trailer_url'], $movie_data['rating'], $movie_data['status'], $poster_path, $movie_data['id']);
+    } else {
+        $stmt->bind_param("sssssssssdsi", $movie_data['title'], $movie_data['description'], $movie_data['release_date'], $movie_data['duration'], $movie_data['genre'], $movie_data['language'], $movie_data['director'], $movie_data['cast'], $movie_data['trailer_url'], $movie_data['rating'], $movie_data['status'], $movie_data['id']);
+    }
+
+    if ($stmt->execute()) {
+        return ['success' => true, 'message' => 'Movie updated successfully.'];
+    } else {
+        return ['success' => false, 'message' => 'Failed to update movie.'];
+    }
+}
+function getBookedSeats($show_id) {
+    global $conn;
+    $stmt = $conn->prepare("SELECT seat_numbers FROM bookings WHERE show_id = ? AND booking_status = 'confirmed'");
+    $stmt->bind_param("i", $show_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    $booked_seats = [];
+    while ($row = $result->fetch_assoc()) {
+        $seats = explode(',', $row['seat_numbers']);
+        $booked_seats = array_merge($booked_seats, $seats);
+    }
+    
+    return $booked_seats;
+}
+
+function areSeatsAlreadyBooked($show_id, $selected_seats_array) {
+    $booked_seats = getBookedSeats($show_id); 
+    foreach ($selected_seats_array as $seat) {
+        if (in_array($seat, $booked_seats)) {
+            return true;
+        }
+    }
+    return false;
+}
+function getAvailableSeats($show_id) {
+    // Replace this with actual logic to fetch available seats from the database
+    // For example:
+    global $conn;
+    $db = $conn;
+    $query = $db->prepare("SELECT available_seats FROM shows WHERE id = ?");
+    $query->execute([$show_id]);
+    $result = $query->fetch();
+    return (is_array($result) && isset($result['available_seats'])) ? intval($result['available_seats']) : 0;
+}
+// Function to get movie by ID
 function getMovieById($id) {
     global $conn;
     
@@ -42,6 +125,7 @@ function getMovieById($id) {
     return null;
 }
 
+// Function to get shows for a movie
 function getShowsByMovieId($movie_id) {
     global $conn;
     
@@ -64,6 +148,7 @@ function getShowsByMovieId($movie_id) {
     return $shows;
 }
 
+// Function to get show by ID
 function getShowById($id) {
     global $conn;
     
@@ -86,12 +171,15 @@ function getShowById($id) {
     return null;
 }
 
+// Function to create a booking
 function createBooking($user_id, $show_id, $seats_booked, $seat_numbers, $total_amount) {
     global $conn;
     
+    // Start transaction
     $conn->begin_transaction();
     
     try {
+        // Check if seats are still available
         $stmt = $conn->prepare("SELECT available_seats FROM shows WHERE id = ? FOR UPDATE");
         $stmt->bind_param("i", $show_id);
         $stmt->execute();
@@ -103,10 +191,12 @@ function createBooking($user_id, $show_id, $seats_booked, $seat_numbers, $total_
             return ["success" => false, "message" => "Not enough seats available."];
         }
         
+        // Update available seats
         $stmt = $conn->prepare("UPDATE shows SET available_seats = available_seats - ? WHERE id = ?");
         $stmt->bind_param("ii", $seats_booked, $show_id);
         $stmt->execute();
         
+        // Create booking
         $stmt = $conn->prepare("
             INSERT INTO bookings (user_id, show_id, seats_booked, seat_numbers, total_amount, payment_status, booking_status)
             VALUES (?, ?, ?, ?, ?, 'completed', 'confirmed')
@@ -116,6 +206,7 @@ function createBooking($user_id, $show_id, $seats_booked, $seat_numbers, $total_
         
         $booking_id = $conn->insert_id;
         
+        // Commit transaction
         $conn->commit();
         
         return ["success" => true, "booking_id" => $booking_id];
@@ -124,7 +215,36 @@ function createBooking($user_id, $show_id, $seats_booked, $seat_numbers, $total_
         return ["success" => false, "message" => "Error creating booking: " . $e->getMessage()];
     }
 }
+function getBookingById($booking_id, $user_id) {
+    // Assuming a database connection is available as $conn
+    global $conn;
 
+    $stmt = $conn->prepare("SELECT * FROM bookings WHERE id = ? AND user_id = ?");
+    $stmt->bind_param("ii", $booking_id, $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    return $result->fetch_assoc();
+}
+// Function to save booking
+function saveBooking($user_id, $show_id, $seat_numbers, $total_amount) {
+    global $conn;
+
+    $seats_booked = count(explode(',', $seat_numbers));
+    $stmt = $conn->prepare("
+        INSERT INTO bookings (user_id, show_id, seat_numbers, seats_booked, total_amount, booking_date, booking_status, payment_status)
+        VALUES (?, ?, ?, ?, ?, NOW(), 'confirmed', 'paid')
+    ");
+    $stmt->bind_param("iisid", $user_id, $show_id, $seat_numbers, $seats_booked, $total_amount);
+
+    if ($stmt->execute()) {
+        return ['success' => true, 'booking_id' => $stmt->insert_id];
+    } else {
+        return ['success' => false, 'message' => 'Failed to save booking.'];
+    }
+}
+
+// Function to get user bookings
 function getUserBookings($user_id) {
     global $conn;
     
@@ -150,6 +270,7 @@ function getUserBookings($user_id) {
     return $bookings;
 }
 
+// Function to cancel booking
 function cancelBooking($booking_id, $user_id) {
     global $conn;
     
@@ -195,9 +316,11 @@ function cancelBooking($booking_id, $user_id) {
     }
 }
 
+// Function to get recommended movies based on user's booking history
 function getRecommendedMovies($user_id, $limit = 5) {
     global $conn;
     
+    // Get genres from user's past bookings
     $stmt = $conn->prepare("
         SELECT DISTINCT m.genre
         FROM bookings b
@@ -212,6 +335,7 @@ function getRecommendedMovies($user_id, $limit = 5) {
     
     $genres = [];
     while ($row = $result->fetch_assoc()) {
+        // Split genres (they might be stored as comma-separated values)
         $movie_genres = explode(',', $row['genre']);
         foreach ($movie_genres as $genre) {
             $genre = trim($genre);
@@ -221,6 +345,7 @@ function getRecommendedMovies($user_id, $limit = 5) {
         }
     }
     
+    // If user has no booking history, return popular movies
     if (empty($genres)) {
         $stmt = $conn->prepare("
             SELECT * FROM movies 
@@ -240,6 +365,7 @@ function getRecommendedMovies($user_id, $limit = 5) {
         return $movies;
     }
     
+    // Build query to find movies with similar genres
     $sql = "
         SELECT * FROM movies 
         WHERE status = 'now_showing' AND (
@@ -274,6 +400,7 @@ function getRecommendedMovies($user_id, $limit = 5) {
     return $movies;
 }
 
+// Function to get active promotions
 function getActivePromotions() {
     global $conn;
     
@@ -293,6 +420,7 @@ function getActivePromotions() {
     return $promotions;
 }
 
+// Function to submit contact form
 function submitContactForm($name, $email, $subject, $message) {
     global $conn;
     
@@ -309,6 +437,7 @@ function submitContactForm($name, $email, $subject, $message) {
     }
 }
 
+// Function to search movies
 function searchMovies($keyword, $genre = null, $language = null) {
     global $conn;
     
@@ -345,6 +474,7 @@ function searchMovies($keyword, $genre = null, $language = null) {
     return $movies;
 }
 
+// Function to get all genres
 function getAllGenres() {
     global $conn;
     
@@ -367,6 +497,7 @@ function getAllGenres() {
     return $all_genres;
 }
 
+// Function to get all languages
 function getAllLanguages() {
     global $conn;
     
@@ -383,6 +514,9 @@ function getAllLanguages() {
     return $languages;
 }
 
+// Admin Functions
+
+// Function to get all users
 function getAllUsers() {
     global $conn;
     
@@ -398,6 +532,7 @@ function getAllUsers() {
     return $users;
 }
 
+// Function to get all bookings
 function getAllBookings() {
     global $conn;
     
@@ -422,10 +557,13 @@ function getAllBookings() {
     return $bookings;
 }
 
+// Function to add/update movie
 function saveMovie($data, $poster = null) {
     global $conn;
     
+    // Check if it's an update or new movie
     if (isset($data['id']) && !empty($data['id'])) {
+        // Update existing movie
         $sql = "
             UPDATE movies SET 
             title = ?, description = ?, release_date = ?, duration = ?,
@@ -440,6 +578,7 @@ function saveMovie($data, $poster = null) {
         ];
         $types = "sssississds";
         
+        // If new poster is uploaded
         if ($poster && $poster['size'] > 0) {
             $upload_result = uploadFile($poster);
             if ($upload_result['success']) {
@@ -464,10 +603,13 @@ function saveMovie($data, $poster = null) {
             return ["success" => false, "message" => "Error updating movie: " . $conn->error];
         }
     } else {
+        // Add new movie
+        // Poster is required for new movies
         if (!$poster || $poster['size'] == 0) {
             return ["success" => false, "message" => "Poster image is required for new movies."];
         }
         
+        // Upload poster
         $upload_result = uploadFile($poster);
         if (!$upload_result['success']) {
             return ["success" => false, "message" => $upload_result['message']];
@@ -493,20 +635,25 @@ function saveMovie($data, $poster = null) {
     }
 }
 
+// Function to delete movie
 function deleteMovie($id) {
     global $conn;
     
+    // Start transaction
     $conn->begin_transaction();
     
     try {
+        // Delete related shows first
         $stmt = $conn->prepare("DELETE FROM shows WHERE movie_id = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
         
+        // Delete movie
         $stmt = $conn->prepare("DELETE FROM movies WHERE id = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
         
+        // Commit transaction
         $conn->commit();
         
         return ["success" => true, "message" => "Movie deleted successfully."];
@@ -516,10 +663,13 @@ function deleteMovie($id) {
     }
 }
 
+// Function to add/update promotion
 function savePromotion($data, $image = null) {
     global $conn;
     
+    // Check if it's an update or new promotion
     if (isset($data['id']) && !empty($data['id'])) {
+        // Update existing promotion
         $sql = "
             UPDATE promotions SET 
             title = ?, description = ?, start_date = ?, end_date = ?, is_active = ?
@@ -531,6 +681,7 @@ function savePromotion($data, $image = null) {
         ];
         $types = "ssssi";
         
+        // If new image is uploaded
         if ($image && $image['size'] > 0) {
             $upload_result = uploadFile($image);
             if ($upload_result['success']) {
@@ -555,10 +706,13 @@ function savePromotion($data, $image = null) {
             return ["success" => false, "message" => "Error updating promotion: " . $conn->error];
         }
     } else {
+        // Add new promotion
+        // Image is required for new promotions
         if (!$image || $image['size'] == 0) {
             return ["success" => false, "message" => "Image is required for new promotions."];
         }
         
+        // Upload image
         $upload_result = uploadFile($image);
         if (!$upload_result['success']) {
             return ["success" => false, "message" => $upload_result['message']];
@@ -582,31 +736,37 @@ function savePromotion($data, $image = null) {
     }
 }
 
+// Function to get dashboard statistics
 function getDashboardStats() {
     global $conn;
     
     $stats = [];
     
+    // Total users
     $stmt = $conn->prepare("SELECT COUNT(*) as total FROM users WHERE is_admin = 0");
     $stmt->execute();
     $result = $stmt->get_result();
     $stats['total_users'] = $result->fetch_assoc()['total'];
     
+    // Total movies
     $stmt = $conn->prepare("SELECT COUNT(*) as total FROM movies");
     $stmt->execute();
     $result = $stmt->get_result();
     $stats['total_movies'] = $result->fetch_assoc()['total'];
     
+    // Total bookings
     $stmt = $conn->prepare("SELECT COUNT(*) as total FROM bookings");
     $stmt->execute();
     $result = $stmt->get_result();
     $stats['total_bookings'] = $result->fetch_assoc()['total'];
     
+    // Revenue
     $stmt = $conn->prepare("SELECT SUM(total_amount) as total FROM bookings WHERE payment_status = 'completed'");
     $stmt->execute();
     $result = $stmt->get_result();
     $stats['total_revenue'] = $result->fetch_assoc()['total'] ?? 0;
     
+    // Recent bookings
     $stmt = $conn->prepare("
         SELECT b.*, u.username, m.title as movie_title
         FROM bookings b

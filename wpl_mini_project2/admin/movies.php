@@ -1,14 +1,19 @@
 <?php
+// Set page title
 $page_title = "Manage Movies";
 
+// Include functions file
 require_once '../includes/functions.php';
 
+// Check if user is logged in and is admin
 if (!isLoggedIn() || !isAdmin()) {
     redirect('../login.php');
 }
 
+// Initialize variables
 $success = $error = "";
 
+// Process delete movie
 if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id'])) {
     $movie_id = intval($_GET['id']);
     $result = deleteMovie($movie_id);
@@ -20,6 +25,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
     }
 }
 
+// Get all movies
 $stmt = $conn->prepare("SELECT * FROM movies ORDER BY id DESC");
 $stmt->execute();
 $result = $stmt->get_result();
@@ -28,13 +34,16 @@ while ($row = $result->fetch_assoc()) {
     $movies[] = $row;
 }
 
+// Include header
 include 'includes/header.php';
 ?>
 
 <div class="container-fluid">
     <div class="row">
+        <!-- Sidebar -->
         <?php include 'includes/sidebar.php'; ?>
         
+        <!-- Main Content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Manage Movies</h1>
@@ -116,5 +125,6 @@ include 'includes/header.php';
 </div>
 
 <?php
+// Include footer
 include 'includes/footer.php';
 ?>
