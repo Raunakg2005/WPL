@@ -1,22 +1,16 @@
 <?php
-// Set page title
 $page_title = "Add Promotion";
 
-// Include functions file
 require_once '../includes/functions.php';
 
-// Check if user is logged in and is admin
 if (!isLoggedIn() || !isAdmin()) {
     redirect('../login.php');
 }
 
-// Initialize variables
 $title = $code = $description = $discount_type = $discount_value = $start_date = $end_date = "";
 $error = $success = "";
 
-// Process form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get form data
     $title = sanitize($_POST['title']);
     $code = sanitize($_POST['code']);
     $description = sanitize($_POST['description']);
@@ -26,7 +20,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $end_date = sanitize($_POST['end_date']);
     $status = isset($_POST['status']) ? 'active' : 'inactive';
     
-    // Validate form data
     if (empty($title) || empty($code) || empty($discount_type) || $discount_value <= 0 || empty($start_date) || empty($end_date)) {
         $error = "Please fill all required fields with valid values.";
     } elseif (strtotime($end_date) < strtotime($start_date)) {
@@ -34,7 +27,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif ($discount_type == 'percentage' && $discount_value > 100) {
         $error = "Percentage discount cannot be greater than 100%.";
     } else {
-        // Check if code already exists
         $stmt = $conn->prepare("SELECT id FROM promotions WHERE code = ?");
         $stmt->bind_param("s", $code);
         $stmt->execute();
@@ -43,7 +35,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result->num_rows > 0) {
             $error = "Promotion code already exists. Please use a different one.";
         } else {
-            // Insert promotion
             $stmt = $conn->prepare("
                 INSERT INTO promotions (title, code, description, discount_type, discount_value, start_date, end_date, status)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -52,7 +43,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             if ($stmt->execute()) {
                 $success = "Promotion added successfully!";
-                // Clear form data
                 $title = $code = $description = $discount_type = $discount_value = $start_date = $end_date = "";
             } else {
                 $error = "Error: " . $stmt->error;
@@ -61,16 +51,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Include header
 include 'includes/header.php';
 ?>
 
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
         <?php include 'includes/sidebar.php'; ?>
         
-        <!-- Main Content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Add New Promotion</h1>
@@ -160,6 +147,5 @@ include 'includes/header.php';
 </div>
 
 <?php
-// Include footer
 include 'includes/footer.php';
 ?>

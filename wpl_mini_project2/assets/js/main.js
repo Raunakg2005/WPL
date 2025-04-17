@@ -1,22 +1,15 @@
-/**
- * Main JavaScript file for Movie Booking System
- */
 
-// Wait for the DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
     
-    // Initialize popovers
     var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
     var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
         return new bootstrap.Popover(popoverTriggerEl);
     });
     
-    // Navbar scroll effect
     const navbar = document.querySelector('.navbar');
     if (navbar) {
         window.addEventListener('scroll', function() {
@@ -28,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Movie filter functionality
     const movieFilter = document.getElementById('movie-filter');
     if (movieFilter) {
         const filterForm = movieFilter.querySelector('form');
@@ -42,7 +34,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const genre = formData.get('genre');
             const language = formData.get('language');
             
-            // Redirect to movies.php with filter parameters
             let url = 'movies.php?';
             if (searchTerm) url += `search=${encodeURIComponent(searchTerm)}&`;
             if (genre) url += `genre=${encodeURIComponent(genre)}&`;
@@ -52,7 +43,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Seat selection functionality
     const seats = document.querySelectorAll('.seat-available');
     const selectedSeatsInput = document.getElementById('selected_seats');
     const totalSeatsInput = document.getElementById('seats_booked');
@@ -67,18 +57,15 @@ document.addEventListener('DOMContentLoaded', function() {
             seat.addEventListener('click', function() {
                 this.classList.toggle('seat-selected');
                 
-                // Update selected seats
                 const selectedSeats = document.querySelectorAll('.seat-selected');
                 const selectedSeatNumbers = Array.from(selectedSeats).map(seat => seat.textContent.trim());
                 
                 totalSeatsInput.value = selectedSeats.length;
                 seatNumbersInput.value = selectedSeatNumbers.join(', ');
                 
-                // Update total amount
                 const totalAmount = selectedSeats.length * ticketPrice;
                 totalAmountElement.textContent = totalAmount.toFixed(2);
                 
-                // Enable/disable book button
                 const bookButton = document.getElementById('book_button');
                 if (bookButton) {
                     bookButton.disabled = selectedSeats.length === 0;
@@ -87,7 +74,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Booking form validation
     const bookingForm = document.getElementById('booking-form');
     if (bookingForm) {
         bookingForm.addEventListener('submit', function(e) {
@@ -103,43 +89,36 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Contact form validation
     const contactForm = document.getElementById('contact-form');
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
             let isValid = true;
             
-            // Get form fields
             const nameInput = document.getElementById('name');
             const emailInput = document.getElementById('email');
             const subjectInput = document.getElementById('subject');
             const messageInput = document.getElementById('message');
             
-            // Clear previous error messages
             document.querySelectorAll('.is-invalid').forEach(el => {
                 el.classList.remove('is-invalid');
             });
             
-            // Validate name
             if (!nameInput.value.trim()) {
                 nameInput.classList.add('is-invalid');
                 isValid = false;
             }
             
-            // Validate email
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailInput.value.trim() || !emailRegex.test(emailInput.value.trim())) {
                 emailInput.classList.add('is-invalid');
                 isValid = false;
             }
             
-            // Validate subject
             if (!subjectInput.value.trim()) {
                 subjectInput.classList.add('is-invalid');
                 isValid = false;
             }
             
-            // Validate message
             if (!messageInput.value.trim()) {
                 messageInput.classList.add('is-invalid');
                 isValid = false;
@@ -151,50 +130,42 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Registration form validation
     const registerForm = document.getElementById('register-form');
     if (registerForm) {
         registerForm.addEventListener('submit', function(e) {
             let isValid = true;
             
-            // Get form fields
             const usernameInput = document.getElementById('username');
             const emailInput = document.getElementById('email');
             const passwordInput = document.getElementById('password');
             const confirmPasswordInput = document.getElementById('confirm-password');
             const fullNameInput = document.getElementById('full-name');
             
-            // Clear previous error messages
             document.querySelectorAll('.is-invalid').forEach(el => {
                 el.classList.remove('is-invalid');
             });
             
-            // Validate username
             if (!usernameInput.value.trim() || usernameInput.value.length < 3) {
                 usernameInput.classList.add('is-invalid');
                 isValid = false;
             }
             
-            // Validate email
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailInput.value.trim() || !emailRegex.test(emailInput.value.trim())) {
                 emailInput.classList.add('is-invalid');
                 isValid = false;
             }
             
-            // Validate password
             if (!passwordInput.value || passwordInput.value.length < 6) {
                 passwordInput.classList.add('is-invalid');
                 isValid = false;
             }
             
-            // Validate confirm password
             if (passwordInput.value !== confirmPasswordInput.value) {
                 confirmPasswordInput.classList.add('is-invalid');
                 isValid = false;
             }
             
-            // Validate full name
             if (!fullNameInput.value.trim()) {
                 fullNameInput.classList.add('is-invalid');
                 isValid = false;
@@ -206,7 +177,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Password toggle
     const passwordToggles = document.querySelectorAll('.password-toggle');
     passwordToggles.forEach(function(toggle) {
         toggle.addEventListener('click', function() {
@@ -226,7 +196,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Movie rating functionality
     const ratingInputs = document.querySelectorAll('.rating-stars input');
     const ratingLabels = document.querySelectorAll('.rating-stars label');
 
@@ -249,7 +218,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Parallax effect
     const parallaxElements = document.querySelectorAll('.parallax-section');
     if (parallaxElements.length > 0) {
         window.addEventListener('scroll', function() {
@@ -259,7 +227,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const sectionHeight = section.offsetHeight;
                 
                 if (scrollPosition > sectionTop - window.innerHeight && scrollPosition < sectionTop + sectionHeight) {
-                    const speed = 0.5; // Adjust the parallax speed
+                    const speed = 0.5; 
                     const yPos = (scrollPosition - sectionTop) * speed;
                     section.style.backgroundPosition = 'center ' + yPos + 'px';
                 }
@@ -267,7 +235,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
@@ -284,7 +251,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Animate elements on scroll
     const animateOnScroll = function() {
         const elements = document.querySelectorAll('.animate-on-scroll');
         
@@ -299,9 +265,8 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     window.addEventListener('scroll', animateOnScroll);
-    animateOnScroll(); // Run once on page load
+    animateOnScroll(); 
     
-    // Copy promotion code to clipboard
     const promotionCodes = document.querySelectorAll('.promotion-code');
 
     promotionCodes.forEach(function(code) {
@@ -309,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const textToCopy = this.textContent.trim();
             
             navigator.clipboard.writeText(textToCopy).then(function() {
-                // Show tooltip or alert
+                
                 alert('Promotion code copied: ' + textToCopy);
             }).catch(function(err) {
                 console.error('Could not copy text: ', err);
@@ -317,7 +282,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Mobile menu toggle
     const mobileMenuToggle = document.querySelector('.navbar-toggler');
     const navbarCollapse = document.querySelector('.navbar-collapse');
 
@@ -331,7 +295,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Movie trailer modal
     const trailerButtons = document.querySelectorAll('.trailer-btn');
     trailerButtons.forEach(button => {
         button.addEventListener('click', function() {
@@ -342,7 +305,6 @@ document.addEventListener('DOMContentLoaded', function() {
             trailerIframe.src = trailerUrl;
             trailerModal.show();
             
-            // Reset iframe src when modal is closed
             document.getElementById('trailerModal').addEventListener('hidden.bs.modal', function() {
                 trailerIframe.src = '';
             });

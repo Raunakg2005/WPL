@@ -31,7 +31,7 @@ include 'includes/header.php';
 ?>
 
 <!-- Recommendations Banner Section -->
-<section class="recommendations-banner parallax-section">
+<section class="movies-banner parallax-section" style="background-image: url('assets/uploads/movies-banner.jpg'); background-size: cover; background-position: center; background-attachment: fixed;">
     <div class="container">
         <div class="row">
             <div class="col-md-12 text-center">

@@ -1,32 +1,24 @@
 <?php
-// Include functions file
 require_once 'includes/functions.php';
 
-// Check if user is logged in
 if (!isLoggedIn()) {
     redirect('login.php');
 }
 
-// Check if show ID is provided
 if (!isset($_GET['show_id']) || empty($_GET['show_id'])) {
     redirect('movies.php');
 }
 
-// Get show ID
 $show_id = intval($_GET['show_id']);
 
-// Get show details
 $show = getShowById($show_id);
 
-// If show not found, redirect to movies page
 if (!$show) {
     redirect('movies.php');
 }
 
-// Set page title
 $page_title = "Book Tickets - " . $show['movie_title'];
 
-// Include header
 include 'includes/header.php';
 ?>
 
@@ -61,13 +53,11 @@ include 'includes/header.php';
                     
                     <div class="seats-container">
                         <?php
-                        // Generate seats (5 rows of 10 seats)
                         $rows = ['A', 'B', 'C', 'D', 'E'];
                         $seats_per_row = 10;
                         $total_seats = count($rows) * $seats_per_row;
                         $booked_seats = $total_seats - $show['available_seats'];
 
-                        // Randomly generate booked seats for demonstration
                         $booked_seats_array = [];
                         for ($i = 0; $i < $booked_seats; $i++) {
                             $random_row = $rows[array_rand($rows)];
@@ -84,7 +74,6 @@ include 'includes/header.php';
                                 $is_booked = in_array($seat_number, $booked_seats_array);
                                 $seat_class = $is_booked ? 'seat booked' : 'seat';
 
-                                // Add tabindex for keyboard accessibility
                                 echo '<div class="' . $seat_class . '" data-seat="' . $seat_number . '" tabindex="0">' . $i . '</div>';
                             }
 
@@ -195,6 +184,5 @@ include 'includes/header.php';
 </script>
 
 <?php
-// Include footer
 include 'includes/footer.php';
 ?>

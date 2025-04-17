@@ -135,7 +135,7 @@ include 'includes/header.php';
                         </div>
                         <div class="card-body text-center">
                             <div class="mb-3">
-                                <img src="https://via.placeholder.com/150" alt="Admin Avatar" class="rounded-circle img-thumbnail">
+                                <img src="../assets/uploads/team1.jpg" alt="Admin Avatar" class="rounded-circle img-thumbnail">
                             </div>
                             <h5 class="card-title"><?php echo $full_name; ?></h5>
                             <p class="card-text text-muted"><?php echo $username; ?></p>

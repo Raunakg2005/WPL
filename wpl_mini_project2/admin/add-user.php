@@ -1,22 +1,16 @@
 <?php
-// Set page title
 $page_title = "Add User";
 
-// Include functions file
 require_once '../includes/functions.php';
 
-// Check if user is logged in and is admin
 if (!isLoggedIn() || !isAdmin()) {
     redirect('../login.php');
 }
 
-// Initialize variables
 $username = $email = $full_name = "";
 $error = $success = "";
 
-// Process form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get form data
     $username = sanitize($_POST['username']);
     $email = sanitize($_POST['email']);
     $full_name = sanitize($_POST['full_name']);
@@ -24,7 +18,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $confirm_password = $_POST['confirm_password'];
     $status = isset($_POST['status']) ? 1 : 0;
     
-    // Validate form data
     if (empty($username) || empty($email) || empty($full_name) || empty($password) || empty($confirm_password)) {
         $error = "Please fill all required fields.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -34,7 +27,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (strlen($password) < 6) {
         $error = "Password must be at least 6 characters long.";
     } else {
-        // Check if username already exists
         $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
@@ -43,7 +35,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result->num_rows > 0) {
             $error = "Username already exists. Please choose a different one.";
         } else {
-            // Check if email already exists
             $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
             $stmt->bind_param("s", $email);
             $stmt->execute();
@@ -52,10 +43,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($result->num_rows > 0) {
                 $error = "Email already exists. Please use a different one.";
             } else {
-                // Hash password
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 
-                // Insert user
                 $stmt = $conn->prepare("
                     INSERT INTO users (username, email, password, full_name, status, is_admin)
                     VALUES (?, ?, ?, ?, ?, 0)
@@ -64,7 +53,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                 if ($stmt->execute()) {
                     $success = "User added successfully!";
-                    // Clear form data
                     $username = $email = $full_name = "";
                 } else {
                     $error = "Error: " . $stmt->error;
@@ -74,16 +62,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Include header
 include 'includes/header.php';
 ?>
 
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
         <?php include 'includes/sidebar.php'; ?>
         
-        <!-- Main Content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Add New User</h1>
@@ -166,6 +151,5 @@ include 'includes/header.php';
 </div>
 
 <?php
-// Include footer
 include 'includes/footer.php';
 ?>

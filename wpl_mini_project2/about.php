@@ -1,8 +1,6 @@
 <?php
-// Set page title
 $page_title = "About Us";
 
-// Include header
 require_once 'includes/header.php';
 ?>
 
@@ -38,19 +36,14 @@ require_once 'includes/header.php';
         </div>
     </div>
     
-    <!-- Parallax Section -->
-    <section class="parallax-section mb-5" style="background-image: url('assets/uploads/about-parallax.jpg');">
-        <div class="parallax-overlay"></div>
-        <div class="container parallax-content">
-            <div class="row justify-content-center">
-                <div class="col-lg-8 text-center">
-                    <h2 class="mb-4">Our Commitment to Excellence</h2>
-                    <p class="mb-0">We are dedicated to providing you with the best movie booking experience possible. From the latest blockbusters to indie gems, we've got you covered.</p>
-                </div>
-            </div>
+    <section class="parallax-section mb-5" style="background-image: url('assets/uploads/about-parallax.gif'); background-size: cover; background-position: center; background-attachment: fixed; position: relative; color: white; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8); display: flex; align-items: center; justify-content: center; height: 300px;">
+        <div class="parallax-overlay" style="background-color: rgba(0, 0, 0, 0.3); position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+        <div class="container parallax-content" style="position: relative; z-index: 1; text-align: center;">
+            <h2 class="mb-4" style="color: white; font-weight: bold;">Our Commitment to Excellence</h2>
+            <p class="mb-0" style="color: white; font-size: 1.2rem;">We are dedicated to providing you with the best movie booking experience possible. From the latest blockbusters to indie gems, we've got you covered.</p>
         </div>
     </section>
-    
+    </section>
     <div class="about-section mb-5">
         <h2 class="about-section-title">Our Team</h2>
         <div class="row">
@@ -136,6 +129,5 @@ require_once 'includes/header.php';
 </div>
 
 <?php
-// Include footer
 include 'includes/footer.php';
 ?>

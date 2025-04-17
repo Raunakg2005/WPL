@@ -1,39 +1,30 @@
 <?php
-// Set page title
 $page_title = "Edit Movie";
 
-// Include functions file
 require_once '../includes/functions.php';
 
 
-// Check if user is logged in and is admin
 if (!isLoggedIn() || !isAdmin()) {
     redirect('../login.php');
 }
 
-// Check if movie ID is provided
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     redirect('movies.php');
 }
 
-// Get movie ID
 $movie_id = intval($_GET['id']);
 
-// Get movie details
 $stmt = $conn->prepare("SELECT * FROM movies WHERE id = ?");
 $stmt->bind_param("i", $movie_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// If movie not found, redirect to movies page
 if ($result->num_rows == 0) {
     redirect('movies.php');
 }
 
-// Get movie data
 $movie = $result->fetch_assoc();
 
-// Initialize variables
 $title = $movie['title'];
 $description = $movie['description'];
 $release_date = $movie['release_date'];
@@ -48,9 +39,7 @@ $status = $movie['status'];
 $current_poster = $movie['poster'];
 $error = $success = "";
 
-// Process form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get form data
     $title = sanitize($_POST['title']);
     $description = sanitize($_POST['description']);
     $release_date = sanitize($_POST['release_date']);
@@ -63,11 +52,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $rating = floatval($_POST['rating']);
     $status = sanitize($_POST['status']);
     
-    // Validate form data
     if (empty($title) || empty($description) || empty($release_date) || $duration <= 0 || empty($genre) || empty($language) || empty($director) || empty($cast)) {
         $error = "Please fill all required fields.";
     } else {
-        // Prepare movie data
         $movie_data = [
             'id' => $movie_id,
             'title' => $title,
@@ -83,19 +70,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'status' => $status
         ];
         
-        // Check if new poster is uploaded
-        if (isset($_FILES['poster']) && $_FILES['poster']['error'] == 0) {
-            // Update movie with new poster
-            $result = updateMovie($movie_data, $_FILES['poster']);
-        } else {
-            // Update movie without changing poster
-            $result = updateMovie($movie_data);
-        }
+        $result = updateMovie($movie_data, $_FILES['poster'] ?? null);
         
         if ($result['success']) {
             $success = $result['message'];
             
-            // Refresh movie data
             $stmt = $conn->prepare("SELECT * FROM movies WHERE id = ?");
             $stmt->bind_param("i", $movie_id);
             $stmt->execute();
@@ -108,16 +87,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Include header
 include 'includes/header.php';
 ?>
 
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
         <?php include 'includes/sidebar.php'; ?>
         
-        <!-- Main Content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Edit Movie</h1>
@@ -217,10 +193,9 @@ include 'includes/header.php';
                                         <p class="text-muted">Current poster</p>
                                     </div>
                                     <div class="file-upload">
-                                        <input type="file" class="form-control" id="poster" name="poster" accept="image/*" data-preview="poster-preview">
+                                        <input type="file" class="form-control" id="poster" name="poster" accept="image/*">
                                     </div>
                                     <small class="form-text text-muted">Leave empty to keep current poster. Recommended size: 500x750 pixels</small>
-                                    <img id="poster-preview" class="preview-image mt-3" style="display: none;">
                                 </div>
                             </div>
                         </div>
@@ -239,6 +214,5 @@ include 'includes/header.php';
 </div>
 
 <?php
-// Include footer
 include 'includes/footer.php';
 ?>

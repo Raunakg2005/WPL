@@ -100,8 +100,8 @@ function areSeatsAlreadyBooked($show_id, $selected_seats_array) {
     return false;
 }
 function getAvailableSeats($show_id) {
-    // Replace this with actual logic to fetch available seats from the database
-    // For example:
+    // logic to fetch available seats from the database
+
     global $conn;
     $db = $conn;
     $query = $db->prepare("SELECT available_seats FROM shows WHERE id = ?");
@@ -175,7 +175,6 @@ function getShowById($id) {
 function createBooking($user_id, $show_id, $seats_booked, $seat_numbers, $total_amount) {
     global $conn;
     
-    // Start transaction
     $conn->begin_transaction();
     
     try {
@@ -335,7 +334,6 @@ function getRecommendedMovies($user_id, $limit = 5) {
     
     $genres = [];
     while ($row = $result->fetch_assoc()) {
-        // Split genres (they might be stored as comma-separated values)
         $movie_genres = explode(',', $row['genre']);
         foreach ($movie_genres as $genre) {
             $genre = trim($genre);
@@ -557,81 +555,54 @@ function getAllBookings() {
     return $bookings;
 }
 
-// Function to add/update movie
-function saveMovie($data, $poster = null) {
-    global $conn;
-    
-    // Check if it's an update or new movie
-    if (isset($data['id']) && !empty($data['id'])) {
-        // Update existing movie
-        $sql = "
-            UPDATE movies SET 
-            title = ?, description = ?, release_date = ?, duration = ?,
-            genre = ?, language = ?, director = ?, cast = ?, 
-            trailer_url = ?, rating = ?, status = ?
-        ";
-        
-        $params = [
-            $data['title'], $data['description'], $data['release_date'], $data['duration'],
-            $data['genre'], $data['language'], $data['director'], $data['cast'],
-            $data['trailer_url'], $data['rating'], $data['status']
-        ];
-        $types = "sssississds";
-        
-        // If new poster is uploaded
-        if ($poster && $poster['size'] > 0) {
-            $upload_result = uploadFile($poster);
-            if ($upload_result['success']) {
-                $sql .= ", poster = ?";
-                $params[] = $upload_result['file_path'];
-                $types .= "s";
-            } else {
-                return ["success" => false, "message" => $upload_result['message']];
-            }
-        }
-        
-        $sql .= " WHERE id = ?";
-        $params[] = $data['id'];
-        $types .= "i";
-        
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param($types, ...$params);
-        
-        if ($stmt->execute()) {
-            return ["success" => true, "message" => "Movie updated successfully."];
-        } else {
-            return ["success" => false, "message" => "Error updating movie: " . $conn->error];
-        }
+// Function to upload poster
+function uploadPoster($poster) {
+    $target_dir = "../uploads/";
+    $target_file = $target_dir . basename($poster["name"]);
+    if (move_uploaded_file($poster["tmp_name"], $target_file)) {
+        return $target_file;
     } else {
-        // Add new movie
-        // Poster is required for new movies
-        if (!$poster || $poster['size'] == 0) {
-            return ["success" => false, "message" => "Poster image is required for new movies."];
+        return false;
+    }
+}
+
+// Function to add/update movie
+function saveMovie($movie_data, $poster = null) {
+    global $conn;
+
+    // Handle poster upload if provided
+    if ($poster && $poster['error'] == 0) {
+        $poster_path = uploadPoster($poster);
+        if (!$poster_path) {
+            return ['success' => false, 'message' => 'Failed to upload poster image.'];
         }
-        
-        // Upload poster
-        $upload_result = uploadFile($poster);
-        if (!$upload_result['success']) {
-            return ["success" => false, "message" => $upload_result['message']];
-        }
-        
-        $stmt = $conn->prepare("
-            INSERT INTO movies (title, description, release_date, duration, genre, language, 
-                               director, cast, poster, trailer_url, rating, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ");
-        
-        $stmt->bind_param("sssississdss", 
-            $data['title'], $data['description'], $data['release_date'], $data['duration'],
-            $data['genre'], $data['language'], $data['director'], $data['cast'],
-            $upload_result['file_path'], $data['trailer_url'], $data['rating'], $data['status']
-        );
-        
-        if ($stmt->execute()) {
-            return ["success" => true, "message" => "Movie added successfully.", "id" => $conn->insert_id];
-        } else {
-            return ["success" => false, "message" => "Error adding movie: " . $conn->error];
-        }
+        $movie_data['poster'] = $poster_path;
+    } else {
+        $movie_data['poster'] = null; // Allow null poster
+    }
+
+    // Insert movie into database
+    $stmt = $conn->prepare("INSERT INTO movies (title, description, release_date, duration, genre, language, director, cast, trailer_url, rating, status, poster) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param(
+        "sssissssssss",
+        $movie_data['title'],
+        $movie_data['description'],
+        $movie_data['release_date'],
+        $movie_data['duration'],
+        $movie_data['genre'],
+        $movie_data['language'],
+        $movie_data['director'],
+        $movie_data['cast'],
+        $movie_data['trailer_url'],
+        $movie_data['rating'],
+        $movie_data['status'],
+        $movie_data['poster']
+    );
+
+    if ($stmt->execute()) {
+        return ['success' => true, 'message' => 'Movie added successfully.'];
+    } else {
+        return ['success' => false, 'message' => 'Failed to add movie.'];
     }
 }
 

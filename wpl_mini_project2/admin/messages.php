@@ -1,24 +1,18 @@
 <?php
-// Set page title
 $page_title = "Manage Messages";
 
-// Include functions file
 require_once '../includes/functions.php';
 
-// Check if user is logged in and is admin
 if (!isLoggedIn() || !isAdmin()) {
     redirect('../login.php');
 }
 
-// Initialize variables
 $success = $error = "";
 
-// Process message status change
 if (isset($_GET['action']) && ($_GET['action'] == 'read' || $_GET['action'] == 'unread') && isset($_GET['id'])) {
     $message_id = intval($_GET['id']);
     $status = ($_GET['action'] == 'read') ? 'read' : 'unread';
     
-    // Update message status
     $stmt = $conn->prepare("UPDATE messages SET status = ? WHERE id = ?");
     $stmt->bind_param("si", $status, $message_id);
     
@@ -29,11 +23,9 @@ if (isset($_GET['action']) && ($_GET['action'] == 'read' || $_GET['action'] == '
     }
 }
 
-// Process delete message
 if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id'])) {
     $message_id = intval($_GET['id']);
     
-    // Delete message
     $stmt = $conn->prepare("DELETE FROM messages WHERE id = ?");
     $stmt->bind_param("i", $message_id);
     
@@ -44,8 +36,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
     }
 }
 
-// Get all messages
-$stmt = $conn->prepare("SELECT * FROM messages ORDER BY created_at DESC");
+$stmt = $conn->prepare("SELECT id, name, email, subject, message, status, created_at FROM messages ORDER BY created_at DESC");
 $stmt->execute();
 $result = $stmt->get_result();
 $messages = [];
@@ -53,16 +44,13 @@ while ($row = $result->fetch_assoc()) {
     $messages[] = $row;
 }
 
-// Include header
 include 'includes/header.php';
 ?>
 
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
         <?php include 'includes/sidebar.php'; ?>
         
-        <!-- Main Content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Manage Messages</h1>
@@ -142,6 +130,5 @@ include 'includes/header.php';
 </div>
 
 <?php
-// Include footer
 include 'includes/footer.php';
 ?>

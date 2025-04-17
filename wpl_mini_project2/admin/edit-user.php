@@ -1,60 +1,47 @@
 <?php
-// Set page title
 $page_title = "Edit User";
 
-// Include functions file
 require_once '../includes/functions.php';
 
-// Check if user is logged in and is admin
 if (!isLoggedIn() || !isAdmin()) {
     redirect('../login.php');
 }
 
-// Check if user ID is provided
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     redirect('users.php');
 }
 
-// Get user ID
 $user_id = intval($_GET['id']);
 
-// Get user details
 $stmt = $conn->prepare("SELECT * FROM users WHERE id = ? AND is_admin = 0");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// If user not found, redirect to users page
 if ($result->num_rows == 0) {
     redirect('users.php');
 }
 
-// Get user data
 $user = $result->fetch_assoc();
 
-// Initialize variables
 $username = $user['username'];
 $email = $user['email'];
 $full_name = $user['full_name'];
 $status = $user['status'];
 $error = $success = "";
 
-// Process form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get form data
     $email = sanitize($_POST['email']);
     $full_name = sanitize($_POST['full_name']);
     $status = isset($_POST['status']) ? 1 : 0;
     $new_password = $_POST['new_password'];
     $confirm_password = $_POST['confirm_password'];
     
-    // Validate form data
     if (empty($email) || empty($full_name)) {
         $error = "Please fill all required fields.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Please enter a valid email address.";
     } else {
-        // Check if email already exists (excluding current user)
         $stmt = $conn->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
         $stmt->bind_param("si", $email, $user_id);
         $stmt->execute();
@@ -63,9 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result->num_rows > 0) {
             $error = "Email already exists. Please use a different one.";
         } else {
-            // Check if password is being changed
             if (!empty($new_password) || !empty($confirm_password)) {
-                // Validate new password
                 if (empty($new_password)) {
                     $error = "Please enter the new password.";
                 } elseif (empty($confirm_password)) {
@@ -75,10 +60,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 } elseif (strlen($new_password) < 6) {
                     $error = "New password must be at least 6 characters long.";
                 } else {
-                    // Hash new password
                     $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
                     
-                    // Update user with new password
                     $stmt = $conn->prepare("UPDATE users SET email = ?, full_name = ?, password = ?, status = ? WHERE id = ?");
                     $stmt->bind_param("sssis", $email, $full_name, $hashed_password, $status, $user_id);
                     
@@ -89,7 +72,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     }
                 }
             } else {
-                // Update user without changing password
                 $stmt = $conn->prepare("UPDATE users SET email = ?, full_name = ?, status = ? WHERE id = ?");
                 $stmt->bind_param("ssis", $email, $full_name, $status, $user_id);
                 
@@ -103,16 +85,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Include header
 include 'includes/header.php';
 ?>
 
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
         <?php include 'includes/sidebar.php'; ?>
         
-        <!-- Main Content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Edit User</h1>
@@ -200,6 +179,5 @@ include 'includes/header.php';
 </div>
 
 <?php
-// Include footer
 include 'includes/footer.php';
 ?>

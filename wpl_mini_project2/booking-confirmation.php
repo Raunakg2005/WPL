@@ -194,7 +194,6 @@ include 'includes/header.php';
 </div>
 
 <style>
-    /* Custom CSS for the booking confirmation page */
     .booking-card {
         border-radius: 10px;
         overflow: hidden;

@@ -1,20 +1,15 @@
 <?php
-// Set page title
 $page_title = "Add Show";
 
-// Include functions file
 require_once '../includes/functions.php';
 
-// Check if user is logged in and is admin
 if (!isLoggedIn() || !isAdmin()) {
     redirect('../login.php');
 }
 
-// Initialize variables
 $movie_id = $theater_id = $show_date = $show_time = $price = $available_seats = "";
 $error = $success = "";
 
-// Get all movies
 $stmt = $conn->prepare("SELECT id, title FROM movies WHERE status = 'now_showing' ORDER BY title");
 $stmt->execute();
 $result = $stmt->get_result();
@@ -23,7 +18,6 @@ while ($row = $result->fetch_assoc()) {
     $movies[] = $row;
 }
 
-// Get all theaters
 $stmt = $conn->prepare("SELECT id, name, location FROM theaters ORDER BY name");
 $stmt->execute();
 $result = $stmt->get_result();
@@ -32,9 +26,7 @@ while ($row = $result->fetch_assoc()) {
     $theaters[] = $row;
 }
 
-// Process form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get form data
     $movie_id = intval($_POST['movie_id']);
     $theater_id = intval($_POST['theater_id']);
     $show_date = sanitize($_POST['show_date']);
@@ -42,11 +34,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $price = floatval($_POST['price']);
     $available_seats = intval($_POST['available_seats']);
     
-    // Validate form data
     if ($movie_id <= 0 || $theater_id <= 0 || empty($show_date) || empty($show_time) || $price <= 0 || $available_seats <= 0) {
         $error = "Please fill all required fields with valid values.";
     } else {
-        // Check if show already exists
         $stmt = $conn->prepare("
             SELECT id FROM shows 
             WHERE movie_id = ? AND theater_id = ? AND show_date = ? AND show_time = ?
@@ -58,7 +48,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result->num_rows > 0) {
             $error = "A show with the same movie, theater, date, and time already exists.";
         } else {
-            // Insert new show
             $stmt = $conn->prepare("
                 INSERT INTO shows (movie_id, theater_id, show_date, show_time, price, available_seats)
                 VALUES (?, ?, ?, ?, ?, ?)
@@ -67,7 +56,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             if ($stmt->execute()) {
                 $success = "Show added successfully!";
-                // Clear form data
                 $movie_id = $theater_id = $show_date = $show_time = $price = $available_seats = "";
             } else {
                 $error = "Error: " . $stmt->error;
@@ -76,16 +64,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Include header
 include 'includes/header.php';
 ?>
 
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
         <?php include 'includes/sidebar.php'; ?>
         
-        <!-- Main Content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Add New Show</h1>
@@ -179,6 +164,5 @@ include 'includes/header.php';
 </div>
 
 <?php
-// Include footer
 include 'includes/footer.php';
 ?>

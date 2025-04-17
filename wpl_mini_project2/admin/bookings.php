@@ -1,28 +1,21 @@
 <?php
-// Set page title
 $page_title = "Admin Dashboard";
 
-// Include functions file
 require_once '../includes/functions.php';
 
-// Check if user is logged in and is admin
 if (!isLoggedIn() || !isAdmin()) {
     redirect('../login.php');
 }
 
-// Get dashboard statistics
 $stats = getDashboardStats();
 
-// Include header
 include 'includes/header.php';
 ?>
 
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
         <?php include 'includes/sidebar.php'; ?>
         
-        <!-- Main Content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Dashboard</h1>
@@ -38,7 +31,6 @@ include 'includes/header.php';
                 </div>
             </div>
             
-            <!-- Stats Cards -->
             <div class="row">
                 <div class="col-md-6 col-lg-3 mb-4">
                     <div class="card text-white bg-primary h-100">
@@ -121,7 +113,6 @@ include 'includes/header.php';
                 </div>
             </div>
             
-            <!-- Charts Row -->
             <div class="row mb-4">
                 <div class="col-md-8">
                     <div class="card h-100">
@@ -148,7 +139,6 @@ include 'includes/header.php';
                 </div>
             </div>
             
-            <!-- Recent Bookings -->
             <div class="card mb-4">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
@@ -209,7 +199,6 @@ include 'includes/header.php';
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Sample data for charts - in a real application, this would come from the database
     document.addEventListener('DOMContentLoaded', function() {
         // Bookings Chart
         const bookingsCtx = document.getElementById('bookingsChart').getContext('2d');
@@ -277,6 +266,5 @@ include 'includes/header.php';
 </script>
 
 <?php
-// Include footer
 include 'includes/footer.php';
 ?>

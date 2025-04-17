@@ -1,39 +1,31 @@
 <?php
-// Set page title
 $page_title = "Movies";
 
-// Include functions file
 require_once 'includes/functions.php';
 
-// Initialize variables
 $search = isset($_GET['search']) ? sanitize($_GET['search']) : '';
 $genre = isset($_GET['genre']) ? sanitize($_GET['genre']) : '';
 $language = isset($_GET['language']) ? sanitize($_GET['language']) : '';
 
-// Get all genres and languages for filter
 $genres = getAllGenres();
 $languages = getAllLanguages();
 
-// Get movies based on filters
 $movies = searchMovies($search, $genre, $language);
 
-// Include header
 include 'includes/header.php';
 ?>
 
-<!-- Movies Banner Section -->
-<section class="movies-banner parallax-section">
+<section class="movies-banner parallax-section" style="background-image: url('assets/uploads/movies-banner.jpg'); background-size: cover; background-position: center; background-attachment: fixed;">
     <div class="container">
         <div class="row">
             <div class="col-md-12 text-center">
-            <h1 class="display-4 text-danger">Discover Movies</h1>
-            <p class="lead" style="color: #FFD700;">Find the perfect movie for your entertainment</p>
+                <h1 class="display-4 text-danger">Discover Movies</h1>
+                <p class="lead" style="color: #FFD700;">Find the perfect movie for your entertainment</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Movies Filter Section -->
 <section class="py-5 bg-light">
     <div class="container">
         <div class="row">
@@ -79,7 +71,6 @@ include 'includes/header.php';
     </div>
 </section>
 
-<!-- Movies List Section -->
 <section class="py-5">
     <div class="container">
         <?php if (empty($movies)): ?>
@@ -128,6 +119,5 @@ include 'includes/header.php';
 </section>
 
 <?php
-// Include footer
 include 'includes/footer.php';
 ?>

@@ -1,6 +1,5 @@
 </main>
     
-    <!-- Footer -->
     <footer class="footer mt-5 py-4 bg-dark text-white">
         <div class="container">
             <div class="row">
@@ -30,7 +29,7 @@
             <hr class="bg-light">
             <div class="row">
                 <div class="col-md-6">
-                    <p>&copy; <?php echo date('Y'); ?> <?php echo SITE_NAME; ?>. All Rights Reserved.</p>
+                    <p>&copy; <?php echo date('Y'); ?> Ciniverse. All Rights Reserved.</p>
                 </div>
                 <div class="col-md-6 text-md-end">
                     <p>

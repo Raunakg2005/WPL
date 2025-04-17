@@ -2,12 +2,12 @@
 body {
     font-family: 'Poppins', sans-serif;
     background-color: #f8f9fa;
-    padding-top: 56px; /* For fixed navbar */
+    padding-top: 56px; 
 }
 
 .sidebar {
     position: fixed;
-    top: 56px; /* Match navbar height */
+    top: 56px; 
     bottom: 0;
     left: 0;
     z-index: 100;

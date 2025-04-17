@@ -1,30 +1,22 @@
 <?php
-// Set page title
 $page_title = "Movie Details";
 
-// Include functions file
 require_once 'includes/functions.php';
 
-// Check if movie ID is provided
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     redirect('movies.php');
 }
 
-// Get movie ID
 $movie_id = intval($_GET['id']);
 
-// Get movie details
 $movie = getMovieById($movie_id);
 
-// If movie not found, redirect to movies page
 if (!$movie) {
     redirect('movies.php');
 }
 
-// Get shows for this movie
 $shows = getShowsByMovieId($movie_id);
 
-// Get user's review for this movie if logged in
 $user_review = null;
 if (isLoggedIn()) {
     $user_id = $_SESSION['user_id'];
@@ -42,7 +34,6 @@ if (isLoggedIn()) {
     }
 }
 
-// Get approved reviews for this movie
 $stmt = $conn->prepare("
     SELECT r.*, u.username, u.full_name
     FROM reviews r
@@ -58,7 +49,6 @@ while ($row = $result->fetch_assoc()) {
     $reviews[] = $row;
 }
 
-// Calculate average rating
 $avg_rating = 0;
 $total_reviews = count($reviews);
 if ($total_reviews > 0) {
@@ -69,11 +59,9 @@ if ($total_reviews > 0) {
     $avg_rating = $sum_rating / $total_reviews;
 }
 
-// Include header
 include 'includes/header.php';
 ?>
 
-<!-- Movie Details Banner Section -->
 <section class="movie-details-banner parallax-section" style="background-image: url('<?php echo $movie['poster']; ?>');">
     <div class="overlay"></div>
     <div class="container">
@@ -94,11 +82,9 @@ include 'includes/header.php';
     </div>
 </section>
 
-<!-- Movie Details Section -->
 <section class="py-5">
     <div class="container">
         <div class="row">
-            <!-- Movie Poster and Details -->
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm">
                     <img src="<?php echo $movie['poster']; ?>" class="card-img-top" alt="<?php echo $movie['title']; ?>">
@@ -128,7 +114,6 @@ include 'includes/header.php';
                                 </button>
                             </div>
 
-                            <!-- Trailer Modal -->
                             <div class="modal fade" id="trailerModal" tabindex="-1" aria-labelledby="trailerModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-lg">
                                     <div class="modal-content">

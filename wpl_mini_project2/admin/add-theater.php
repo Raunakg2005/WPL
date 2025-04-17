@@ -1,34 +1,26 @@
 <?php
-// Set page title
 $page_title = "Add Theater";
 
-// Include functions file
 require_once '../includes/functions.php';
 
-// Check if user is logged in and is admin
 if (!isLoggedIn() || !isAdmin()) {
     redirect('../login.php');
 }
 
-// Initialize variables
 $name = $location = $facilities = "";
 $capacity = 100;
 $error = $success = "";
 
-// Process form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get form data
     $name = sanitize($_POST['name']);
     $location = sanitize($_POST['location']);
     $capacity = intval($_POST['capacity']);
     $facilities = sanitize($_POST['facilities']);
     $status = isset($_POST['status']) ? 1 : 0;
     
-    // Validate form data
     if (empty($name) || empty($location) || $capacity <= 0) {
         $error = "Please fill all required fields with valid values.";
     } else {
-        // Insert theater
         $stmt = $conn->prepare("
             INSERT INTO theaters (name, location, capacity, facilities, status)
             VALUES (?, ?, ?, ?, ?)
@@ -37,7 +29,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         if ($stmt->execute()) {
             $success = "Theater added successfully!";
-            // Clear form data
             $name = $location = $facilities = "";
             $capacity = 100;
         } else {
@@ -46,16 +37,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Include header
 include 'includes/header.php';
 ?>
 
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
         <?php include 'includes/sidebar.php'; ?>
         
-        <!-- Main Content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Add New Theater</h1>
@@ -123,6 +111,5 @@ include 'includes/header.php';
 </div>
 
 <?php
-// Include footer
 include 'includes/footer.php';
 ?>

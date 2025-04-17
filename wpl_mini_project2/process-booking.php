@@ -11,7 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $total_amount = floatval($_POST['total_amount']);
     $user_id = $_SESSION['user_id'];
 
-    // Save booking to the database
     $result = saveBooking($user_id, $show_id, $seat_numbers, $total_amount);
 
     if ($result['success']) {

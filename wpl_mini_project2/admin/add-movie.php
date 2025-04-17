@@ -33,35 +33,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($title) || empty($description) || empty($release_date) || $duration <= 0 || empty($genre) || empty($language) || empty($director) || empty($cast)) {
         $error = "Please fill all required fields.";
     } else {
-        // Check if poster is uploaded
-        if (!isset($_FILES['poster']) || $_FILES['poster']['error'] != 0) {
-            $error = "Please upload a poster image.";
+        // Prepare movie data
+        $movie_data = [
+            'title' => $title,
+            'description' => $description,
+            'release_date' => $release_date,
+            'duration' => $duration,
+            'genre' => $genre,
+            'language' => $language,
+            'director' => $director,
+            'cast' => $cast,
+            'trailer_url' => $trailer_url,
+            'rating' => $rating,
+            'status' => $status
+        ];
+        
+        // Save movie without requiring poster
+        $result = saveMovie($movie_data, $_FILES['poster'] ?? null);
+        
+        if ($result['success']) {
+            $success = $result['message'];
+            // Clear form data
+            $title = $description = $release_date = $duration = $genre = $language = $director = $cast = $trailer_url = $rating = $status = "";
         } else {
-            // Prepare movie data
-            $movie_data = [
-                'title' => $title,
-                'description' => $description,
-                'release_date' => $release_date,
-                'duration' => $duration,
-                'genre' => $genre,
-                'language' => $language,
-                'director' => $director,
-                'cast' => $cast,
-                'trailer_url' => $trailer_url,
-                'rating' => $rating,
-                'status' => $status
-            ];
-            
-            // Save movie
-            $result = saveMovie($movie_data, $_FILES['poster']);
-            
-            if ($result['success']) {
-                $success = $result['message'];
-                // Clear form data
-                $title = $description = $release_date = $duration = $genre = $language = $director = $cast = $trailer_url = $rating = $status = "";
-            } else {
-                $error = $result['message'];
-            }
+            $error = $result['message'];
         }
     }
 }
@@ -169,12 +164,11 @@ include 'includes/header.php';
                             
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="poster" class="form-label required-field">Poster Image</label>
+                                    <label for="poster" class="form-label">Poster Image</label>
                                     <div class="file-upload">
-                                        <input type="file" class="form-control" id="poster" name="poster" accept="image/*" data-preview="poster-preview" required>
+                                        <input type="file" class="form-control" id="poster" name="poster" accept="image/*">
                                     </div>
                                     <small class="form-text text-muted">Recommended size: 500x750 pixels</small>
-                                    <img id="poster-preview" class="preview-image mt-3" style="display: none;">
                                 </div>
                             </div>
                         </div>

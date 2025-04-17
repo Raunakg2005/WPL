@@ -1,38 +1,29 @@
 <?php
-// Set page title
 $page_title = "Edit Promotion";
 
-// Include functions file
 require_once '../includes/functions.php';
 
-// Check if user is logged in and is admin
 if (!isLoggedIn() || !isAdmin()) {
     redirect('../login.php');
 }
 
-// Check if promotion ID is provided
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     redirect('promotions.php');
 }
 
-// Get promotion ID
 $promotion_id = intval($_GET['id']);
 
-// Get promotion details
 $stmt = $conn->prepare("SELECT * FROM promotions WHERE id = ?");
 $stmt->bind_param("i", $promotion_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// If promotion not found, redirect to promotions page
 if ($result->num_rows == 0) {
     redirect('promotions.php');
 }
 
-// Get promotion data
 $promotion = $result->fetch_assoc();
 
-// Initialize variables
 $title = $promotion['title'];
 $code = $promotion['code'];
 $description = $promotion['description'];
@@ -43,9 +34,7 @@ $end_date = $promotion['end_date'];
 $status = $promotion['status'];
 $error = $success = "";
 
-// Process form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get form data
     $title = sanitize($_POST['title']);
     $code = sanitize($_POST['code']);
     $description = sanitize($_POST['description']);
@@ -55,7 +44,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $end_date = sanitize($_POST['end_date']);
     $status = isset($_POST['status']) ? 'active' : 'inactive';
     
-    // Validate form data
     if (empty($title) || empty($code) || empty($discount_type) || $discount_value <= 0 || empty($start_date) || empty($end_date)) {
         $error = "Please fill all required fields with valid values.";
     } elseif (strtotime($end_date) < strtotime($start_date)) {
@@ -63,7 +51,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif ($discount_type == 'percentage' && $discount_value > 100) {
         $error = "Percentage discount cannot be greater than 100%.";
     } else {
-        // Check if code already exists (excluding current promotion)
         $stmt = $conn->prepare("SELECT id FROM promotions WHERE code = ? AND id != ?");
         $stmt->bind_param("si", $code, $promotion_id);
         $stmt->execute();
@@ -72,7 +59,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result->num_rows > 0) {
             $error = "Promotion code already exists. Please use a different one.";
         } else {
-            // Update promotion
             $stmt = $conn->prepare("
                 UPDATE promotions 
                 SET title = ?, code = ?, description = ?, discount_type = ?, discount_value = ?, start_date = ?, end_date = ?, status = ?
@@ -82,15 +68,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             if ($stmt->execute()) {
                 $success = "Promotion updated successfully!";
-                
-                // Refresh promotion data
+              
                 $stmt = $conn->prepare("SELECT * FROM promotions WHERE id = ?");
                 $stmt->bind_param("i", $promotion_id);
                 $stmt->execute();
                 $result = $stmt->get_result();
                 $promotion = $result->fetch_assoc();
                 
-                // Update variables
                 $title = $promotion['title'];
                 $code = $promotion['code'];
                 $description = $promotion['description'];
@@ -106,16 +90,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Include header
 include 'includes/header.php';
 ?>
 
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
         <?php include 'includes/sidebar.php'; ?>
         
-        <!-- Main Content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Edit Promotion</h1>
@@ -205,6 +186,5 @@ include 'includes/header.php';
 </div>
 
 <?php
-// Include footer
 include 'includes/footer.php';
 ?>

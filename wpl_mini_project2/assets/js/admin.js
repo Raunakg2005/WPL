@@ -1,22 +1,15 @@
-/**
- * Admin JavaScript file for Movie Booking System
- */
 
-// Wait for the DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
     
-    // Initialize popovers
     var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
     var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
         return new bootstrap.Popover(popoverTriggerEl);
     });
     
-    // File upload preview
     const fileInputs = document.querySelectorAll('.file-upload input[type=file]');
     fileInputs.forEach(input => {
         input.addEventListener('change', function() {
@@ -36,7 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Confirm delete
     const deleteButtons = document.querySelectorAll('.btn-delete');
     deleteButtons.forEach(button => {
         button.addEventListener('click', function(e) {
@@ -46,7 +38,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Toggle status
     const statusToggles = document.querySelectorAll('.status-toggle');
     statusToggles.forEach(toggle => {
         toggle.addEventListener('change', function() {
@@ -57,7 +48,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Show/hide password
     const passwordToggles = document.querySelectorAll('.password-toggle');
     passwordToggles.forEach(toggle => {
         toggle.addEventListener('click', function() {
@@ -73,7 +63,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Date range picker initialization
     const dateRangePickers = document.querySelectorAll('.date-range-picker');
     if (dateRangePickers.length > 0 && typeof daterangepicker !== 'undefined') {
         dateRangePickers.forEach(picker => {
@@ -96,7 +85,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Initialize charts if they exist
     if (typeof Chart !== 'undefined') {
         // Revenue Chart
         const revenueChartCanvas = document.getElementById('revenueChart');

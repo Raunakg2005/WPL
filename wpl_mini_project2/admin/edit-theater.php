@@ -1,38 +1,29 @@
 <?php
-// Set page title
 $page_title = "Edit Theater";
 
-// Include functions file
 require_once '../includes/functions.php';
 
-// Check if user is logged in and is admin
 if (!isLoggedIn() || !isAdmin()) {
     redirect('../login.php');
 }
 
-// Check if theater ID is provided
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     redirect('theaters.php');
 }
 
-// Get theater ID
 $theater_id = intval($_GET['id']);
 
-// Get theater details
 $stmt = $conn->prepare("SELECT * FROM theaters WHERE id = ?");
 $stmt->bind_param("i", $theater_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// If theater not found, redirect to theaters page
 if ($result->num_rows == 0) {
     redirect('theaters.php');
 }
 
-// Get theater data
 $theater = $result->fetch_assoc();
 
-// Initialize variables
 $name = $theater['name'];
 $location = $theater['location'];
 $capacity = $theater['capacity'];
@@ -40,20 +31,16 @@ $facilities = $theater['facilities'];
 $status = $theater['status'];
 $error = $success = "";
 
-// Process form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get form data
     $name = sanitize($_POST['name']);
     $location = sanitize($_POST['location']);
     $capacity = intval($_POST['capacity']);
     $facilities = sanitize($_POST['facilities']);
     $status = isset($_POST['status']) ? 1 : 0;
     
-    // Validate form data
     if (empty($name) || empty($location) || $capacity <= 0) {
         $error = "Please fill all required fields with valid values.";
     } else {
-        // Update theater
         $stmt = $conn->prepare("
             UPDATE theaters 
             SET name = ?, location = ?, capacity = ?, facilities = ?, status = ?
@@ -64,14 +51,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($stmt->execute()) {
             $success = "Theater updated successfully!";
             
-            // Refresh theater data
             $stmt = $conn->prepare("SELECT * FROM theaters WHERE id = ?");
             $stmt->bind_param("i", $theater_id);
             $stmt->execute();
             $result = $stmt->get_result();
             $theater = $result->fetch_assoc();
             
-            // Update variables
             $name = $theater['name'];
             $location = $theater['location'];
             $capacity = $theater['capacity'];
@@ -83,16 +68,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Include header
 include 'includes/header.php';
 ?>
 
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
         <?php include 'includes/sidebar.php'; ?>
         
-        <!-- Main Content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Edit Theater</h1>
@@ -160,6 +142,5 @@ include 'includes/header.php';
 </div>
 
 <?php
-// Include footer
 include 'includes/footer.php';
 ?>

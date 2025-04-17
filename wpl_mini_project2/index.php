@@ -1,24 +1,18 @@
 <?php
-// Set page title
 $page_title = "Home";
 
-// Include functions file
 require_once 'includes/functions.php';
 
-// Get trending movies (limit to 6)
 $trending_movies = getAllMovies(6);
 
-// Get active promotions
 $promotions = getActivePromotions();
 
-// Include header
 include 'includes/header.php';
 ?>
 
-<!-- Hero Section with Parallax Effect -->
 <section class="hero">
     <div class="hero-overlay"></div>
-    <img src="assets/uploads/hero-bg.jpg" alt="Movie Theater" class="hero-bg">
+    <img src="assets/uploads/hero-bg.gif" alt="Movie Theater" class="hero-bg">
     <div class="container hero-content">
         <div class="row">
             <div class="col-lg-8">
@@ -35,7 +29,6 @@ include 'includes/header.php';
     </div>
 </section>
 
-<!-- Trending Movies Section -->
 <section class="py-5">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -74,8 +67,7 @@ include 'includes/header.php';
     </div>
 </section>
 
-<!-- Parallax Section -->
-<section class="parallax-section" style="background-image: url('assets/uploads/parallax-bg.jpg');">
+<section class="parallax-section" style="background-image: url('assets/uploads/about-parallax.gif'); background-blend-mode: lighten; background-color: rgba(255, 255, 255, 0.3);">
     <div class="parallax-overlay"></div>
     <div class="container parallax-content">
         <div class="row justify-content-center">
@@ -88,7 +80,6 @@ include 'includes/header.php';
     </div>
 </section>
 
-<!-- Promotions Section -->
 <?php if (!empty($promotions)): ?>
 <section class="py-5">
     <div class="container">
@@ -111,7 +102,6 @@ include 'includes/header.php';
 </section>
 <?php endif; ?>
 
-<!-- Features Section -->
 <section class="py-5 bg-light">
     <div class="container">
         <h2 class="section-title text-center mb-5">Why Choose Us</h2>
@@ -153,7 +143,6 @@ include 'includes/header.php';
     </div>
 </section>
 
-<!-- Newsletter Section -->
 <section class="py-5">
     <div class="container">
         <div class="row justify-content-center">
@@ -177,7 +166,6 @@ include 'includes/header.php';
     </div>
 </section>
 
-<!-- Trailer Modal -->
 <div class="modal fade" id="trailerModal" tabindex="-1" aria-labelledby="trailerModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -195,6 +183,5 @@ include 'includes/header.php';
 </div>
 
 <?php
-// Include footer
 include 'includes/footer.php';
 ?>

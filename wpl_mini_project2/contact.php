@@ -1,42 +1,34 @@
 <?php
-// Set page title
 $page_title = "Contact Us";
 
-// Include functions file
 require_once 'includes/functions.php';
 
-// Initialize variables
 $name = $email = $subject = $message = "";
 $error = $success = "";
 
-// Process contact form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get form data
     $name = sanitize($_POST['name']);
     $email = sanitize($_POST['email']);
     $subject = sanitize($_POST['subject']);
     $message = sanitize($_POST['message']);
     
-    // Validate form data
     if (empty($name) || empty($email) || empty($subject) || empty($message)) {
         $error = "Please fill all required fields.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Please enter a valid email address.";
     } else {
-        // Submit contact form
-        $result = submitContactForm($name, $email, $subject, $message);
-        
-        if ($result['success']) {
-            $success = $result['message'];
-            // Clear form data
+        $stmt = $conn->prepare("INSERT INTO messages (name, email, subject, message, status, created_at) VALUES (?, ?, ?, ?, 'unread', NOW())");
+        $stmt->bind_param("ssss", $name, $email, $subject, $message);
+
+        if ($stmt->execute()) {
+            $success = "Your message has been sent successfully!";
             $name = $email = $subject = $message = "";
         } else {
-            $error = $result['message'];
+            $error = "Error: " . $stmt->error;
         }
     }
 }
 
-// Include header
 include 'includes/header.php';
 ?>
 
@@ -135,16 +127,14 @@ include 'includes/header.php';
         </div>
     </div>
     
-    <!-- Map Section -->
     <div class="map-section mt-5">
         <h3 class="mb-4">Find Us on Map</h3>
         <div class="ratio ratio-21x9">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.215266754809!2d-73.98784492426385!3d40.75790937138223!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25855c6480299%3A0x55194ec5a1ae072e!2sTimes%20Square!5e0!3m2!1sen!2sus!4v1710341987654!5m2!1sen!2sus" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3770.7926506301715!2d72.89735127350376!3d19.07285205207469!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c627a20bcaa9%3A0xb2fd3bcfeac0052a!2sK.%20J.%20Somaiya%20College%20of%20Engineering!5e0!3m2!1sen!2sin!4v1744798782085!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
     </div>
 </div>
 
 <?php
-// Include footer
 include 'includes/footer.php';
 ?>

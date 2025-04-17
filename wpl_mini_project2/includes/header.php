@@ -26,13 +26,10 @@ require_once 'config/config.php';
     <?php endif; ?>
 </head>
 <body>
-    <!-- Preloader -->
     <div id="preloader">
         <div class="spinner"></div>
     </div>
 
-    <!-- Navigation -->
     <?php include 'includes/navbar.php'; ?>
     
-    <!-- Main Content -->
     <main>

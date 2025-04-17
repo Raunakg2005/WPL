@@ -1,24 +1,18 @@
 <?php
-// Set page title
 $page_title = "Booking Details";
 
-// Include functions file
 require_once '../includes/functions.php';
 
-// Check if user is logged in and is admin
 if (!isLoggedIn() || !isAdmin()) {
     redirect('../login.php');
 }
 
-// Check if booking ID is provided
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     redirect('bookings.php');
 }
 
-// Get booking ID
 $booking_id = intval($_GET['id']);
 
-// Get booking details
 $stmt = $conn->prepare("
     SELECT b.*, u.username, u.email, u.full_name,
            s.show_date, s.show_time, s.price,
@@ -35,24 +29,19 @@ $stmt->bind_param("i", $booking_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// If booking not found, redirect to bookings page
 if ($result->num_rows == 0) {
     redirect('bookings.php');
 }
 
-// Get booking data
 $booking = $result->fetch_assoc();
 
-// Include header
 include 'includes/header.php';
 ?>
 
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
         <?php include 'includes/sidebar.php'; ?>
         
-        <!-- Main Content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Booking Details</h1>
@@ -285,6 +274,5 @@ include 'includes/header.php';
 </div>
 
 <?php
-// Include footer
 include 'includes/footer.php';
 ?>

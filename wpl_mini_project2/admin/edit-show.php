@@ -1,38 +1,29 @@
 <?php
-// Set page title
 $page_title = "Edit Show";
 
-// Include functions file
 require_once '../includes/functions.php';
 
-// Check if user is logged in and is admin
 if (!isLoggedIn() || !isAdmin()) {
     redirect('../login.php');
 }
 
-// Check if show ID is provided
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     redirect('shows.php');
 }
 
-// Get show ID
 $show_id = intval($_GET['id']);
 
-// Get show details
 $stmt = $conn->prepare("SELECT * FROM shows WHERE id = ?");
 $stmt->bind_param("i", $show_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// If show not found, redirect to shows page
 if ($result->num_rows == 0) {
     redirect('shows.php');
 }
 
-// Get show data
 $show = $result->fetch_assoc();
 
-// Initialize variables
 $movie_id = $show['movie_id'];
 $theater_id = $show['theater_id'];
 $show_date = $show['show_date'];
@@ -41,7 +32,6 @@ $price = $show['price'];
 $available_seats = $show['available_seats'];
 $error = $success = "";
 
-// Get all movies
 $stmt = $conn->prepare("SELECT id, title FROM movies ORDER BY title");
 $stmt->execute();
 $result = $stmt->get_result();
@@ -50,7 +40,6 @@ while ($row = $result->fetch_assoc()) {
     $movies[] = $row;
 }
 
-// Get all theaters
 $stmt = $conn->prepare("SELECT id, name, location FROM theaters ORDER BY name");
 $stmt->execute();
 $result = $stmt->get_result();
@@ -59,9 +48,7 @@ while ($row = $result->fetch_assoc()) {
     $theaters[] = $row;
 }
 
-// Process form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get form data
     $movie_id = intval($_POST['movie_id']);
     $theater_id = intval($_POST['theater_id']);
     $show_date = sanitize($_POST['show_date']);
@@ -69,11 +56,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $price = floatval($_POST['price']);
     $available_seats = intval($_POST['available_seats']);
     
-    // Validate form data
     if ($movie_id <= 0 || $theater_id <= 0 || empty($show_date) || empty($show_time) || $price <= 0 || $available_seats <= 0) {
         $error = "Please fill all required fields with valid values.";
     } else {
-        // Check if show already exists (excluding current show)
         $stmt = $conn->prepare("
             SELECT id FROM shows 
             WHERE movie_id = ? AND theater_id = ? AND show_date = ? AND show_time = ? AND id != ?
@@ -85,7 +70,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result->num_rows > 0) {
             $error = "A show with the same movie, theater, date, and time already exists.";
         } else {
-            // Update show
             $stmt = $conn->prepare("
                 UPDATE shows 
                 SET movie_id = ?, theater_id = ?, show_date = ?, show_time = ?, price = ?, available_seats = ?
@@ -96,7 +80,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($stmt->execute()) {
                 $success = "Show updated successfully!";
                 
-                // Refresh show data
                 $stmt = $conn->prepare("SELECT * FROM shows WHERE id = ?");
                 $stmt->bind_param("i", $show_id);
                 $stmt->execute();
@@ -109,16 +92,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Include header
 include 'includes/header.php';
 ?>
 
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
         <?php include 'includes/sidebar.php'; ?>
         
-        <!-- Main Content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Edit Show</h1>
@@ -206,6 +186,5 @@ include 'includes/header.php';
 </div>
 
 <?php
-// Include footer
 include 'includes/footer.php';
 ?>
