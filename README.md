@@ -28,7 +28,7 @@ This is a web-based application built using **HTML**, **CSS**, **JavaScript**, *
 5. Access the project via browser: http://localhost/<project-folder-name>/
 
 ## 👨‍💻 Developed by
-
-Rohan Singh Chauhan  
-Raunak Gupta  
+  
+Raunak kumar Gupta  
 Rishikesh Ramalingam
+Rohan Singh Chauhan
